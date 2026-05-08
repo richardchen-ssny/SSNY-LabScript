@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smile Services of New York — Lab Scripts</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple-light: #7c6ec2;
+  --purple-mid: #3c3089;
+  --purple-dark: #2d2260;
+  --gold: #f4b942;
+  --gold-light: #ffd47a;
+  --bg: #f7f6fb;
+  --text: #1a1535;
+  --text-muted: #6b639a;
+  --border: #e2dff4;
+  --status-sent: #3b82f6;
+  --status-progress: #f59e0b;
+  --status-completed: #8b5cf6;
+  --status-received: #10b981;
+  --danger: #ef4444;
+  --shadow: 0 2px 12px rgba(44,34,96,0.10);
+  --shadow-lg: 0 8px 32px rgba(44,34,96,0.16);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple-mid) 60%, var(--purple-light) 100%);
+  color: white; padding: 0 16px; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 16px rgba(44,34,96,0.25);
+}
+.header-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; height: 60px; gap: 10px; }
+.header-logo { font-size: 1.05rem; font-weight: 900; white-space: nowrap; line-height: 1.2; }
+.header-logo span { font-size: 0.62rem; font-weight: 600; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; display: block; }
+.header-search {
+  flex: 1; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 24px; padding: 7px 14px; color: white; font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem; outline: none;
+}
+.header-search::placeholder { color: rgba(255,255,255,0.6); }
+.header-actions { display: flex; gap: 6px; }
+.btn-gold {
+  background: var(--gold); color: var(--purple-dark); border: none; border-radius: 20px;
+  padding: 7px 14px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.8rem;
+  cursor: pointer; white-space: nowrap; transition: background 0.2s;
+}
+.btn-gold:hover { background: var(--gold-light); }
+.btn-scan {
+  background: rgba(255,255,255,0.15); color: white; border: 1.5px solid rgba(255,255,255,0.4);
+  border-radius: 20px; padding: 7px 14px; font-family: 'Nunito', sans-serif; font-weight: 800;
+  font-size: 0.8rem; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+}
+.btn-scan:hover { background: rgba(255,255,255,0.25); }
+
+/* SCAN MODAL */
+.scan-drop-area {
+  border: 2px dashed var(--border); border-radius: 14px; padding: 28px 16px;
+  text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px;
+  background: var(--bg);
+}
+.scan-drop-area:hover, .scan-drop-area.dragover { border-color: var(--purple-light); background: #f0eefb; }
+.scan-drop-title { font-size: 0.95rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.scan-drop-sub { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+.scan-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 12px; display: none; }
+.scan-status { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-align: center; padding: 8px; display: none; }
+.scan-status.scanning { display: block; color: var(--purple-mid); }
+.scan-status.error { display: block; color: var(--danger); }
+.scan-result-box { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; display: none; }
+.scan-result-box.visible { display: block; }
+.scan-result-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; }
+.scan-result-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 3px 0; border-bottom: 1px solid var(--border); }
+.scan-result-row:last-child { border-bottom: none; }
+.scan-result-key { font-weight: 700; color: var(--text-muted); }
+.scan-result-val { font-weight: 800; color: var(--text); text-align: right; max-width: 60%; }
+.api-key-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.api-key-row label { font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.api-key-input { border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 11px; font-family: 'Nunito', sans-serif; font-size: 0.82rem; color: var(--text); outline: none; }
+.api-key-input:focus { border-color: var(--purple-light); }
+.api-key-hint { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
+
+/* MOBILE */
+@media (max-width: 600px) {
+  /* Header — stack search below logo+buttons */
+  .header-inner { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 8px; }
+  .header-logo { font-size: 0.95rem; flex: 1; }
+  .header-actions { gap: 5px; }
+  .btn-gold, .btn-scan { padding: 6px 11px; font-size: 0.75rem; }
+  .header-search { order: 3; width: 100%; max-width: 100%; flex: none; font-size: 0.82rem; padding: 7px 13px; }
+
+  /* Filters — tighter */
+  .filters-inner { padding: 7px 12px 9px; gap: 5px; }
+  .filter-row { gap: 5px; }
+  .filter-label { min-width: 30px; font-size: 0.62rem; }
+  .filter-btn { padding: 3px 9px; font-size: 0.7rem; }
+  .filter-select { padding: 3px 8px; font-size: 0.7rem; }
+  .filter-right { gap: 4px; }
+
+  /* Banners */
+  .monthly-banner, .quarterly-banner, .dup-banner { padding: 0 10px; }
+  .monthly-card { padding: 11px 14px; }
+  .monthly-grid { gap: 14px; }
+  .quarterly-card { padding: 10px 14px; }
+  .quarterly-grid { gap: 10px; }
+
+  /* Main content */
+  .main-content { padding: 0 10px; margin-top: 10px; }
+  .section-header { flex-wrap: wrap; gap: 6px; }
+  .section-actions { gap: 5px; }
+  .manage-btn { padding: 3px 10px; font-size: 0.68rem; }
+
+  /* Cards — more compact */
+  .card-top { padding: 10px 12px 8px; gap: 8px; }
+  .card-patient { font-size: 0.88rem; }
+  .card-meta { font-size: 0.68rem; }
+  .card-tag { font-size: 0.63rem; padding: 2px 7px; }
+  .status-badge { font-size: 0.63rem; padding: 3px 8px; }
+  .card-middle { padding: 6px 12px; gap: 8px; }
+  .card-dates { gap: 10px; }
+  .date-label { font-size: 0.57rem; }
+  .date-val { font-size: 0.72rem; }
+  .invoice-amount { font-size: 0.88rem; }
+  .invoice-num { font-size: 0.63rem; }
+  .card-notes { padding: 5px 12px; font-size: 0.72rem; }
+  .card-actions-row { padding: 6px 12px 8px; gap: 5px; }
+  .quick-btn { padding: 4px 9px; font-size: 0.68rem; }
+  .action-btn { padding: 4px 9px; font-size: 0.68rem; }
+
+  /* Modal — full width, bigger touch targets */
+  .modal { padding: 16px 16px 40px; border-radius: 20px 20px 0 0; }
+  .modal-title { font-size: 1rem; }
+  .form-row { gap: 8px; margin-bottom: 8px; }
+  .form-group input, .form-group select, .form-group textarea { padding: 10px 11px; font-size: 16px; /* prevents iOS zoom */ }
+  .btn-primary { padding: 13px; font-size: 0.95rem; }
+  .btn-cancel { padding: 12px; font-size: 0.88rem; }
+
+  /* Scan modal */
+  .scan-drop-area { padding: 22px 12px; }
+  .scan-drop-title { font-size: 0.88rem; }
+}
+
+/* FILTERS */
+.filters-wrap { background: white; border-bottom: 1px solid var(--border); }
+.filters-inner { max-width: 960px; margin: 0 auto; padding: 8px 16px 10px; display: flex; flex-direction: column; gap: 6px; }
+.filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-label { font-size: 0.67rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; min-width: 36px; }
+.filter-group { display: flex; gap: 5px; flex-wrap: wrap; }
+.filter-btn {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px;
+  padding: 4px 11px; font-family: 'Nunito', sans-serif; font-size: 0.74rem; font-weight: 700;
+  color: var(--text-muted); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.filter-btn:hover { border-color: var(--purple-light); color: var(--purple-mid); }
+.filter-btn.active { background: var(--purple-mid); border-color: var(--purple-mid); color: white; }
+.filter-select {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px;
+  padding: 4px 11px; font-family: 'Nunito', sans-serif; font-size: 0.74rem; font-weight: 700;
+  color: var(--text-muted); outline: none; cursor: pointer;
+}
+.filter-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+/* BANNERS */
+.monthly-banner { max-width: 960px; margin: 12px auto 0; padding: 0 16px; display: none; }
+.monthly-banner.visible { display: block; }
+.monthly-card {
+  background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+  border-radius: 14px; padding: 14px 18px; color: white;
+}
+.monthly-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.monthly-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; }
+.monthly-grand { font-size: 0.85rem; font-weight: 900; color: var(--gold); }
+.monthly-grid { display: flex; gap: 20px; flex-wrap: wrap; }
+.monthly-item { display: flex; flex-direction: column; }
+.monthly-doctor { font-size: 0.72rem; font-weight: 700; opacity: 0.75; }
+.monthly-amount { font-size: 1.05rem; font-weight: 900; color: var(--gold); }
+.monthly-count { font-size: 0.65rem; opacity: 0.6; font-weight: 600; }
+
+.quarterly-banner { max-width: 960px; margin: 8px auto 0; padding: 0 16px; display: none; }
+.quarterly-banner.visible { display: block; }
+.quarterly-card { background: white; border: 1.5px solid var(--border); border-radius: 14px; padding: 12px 18px; }
+.quarterly-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; }
+.quarterly-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+.quarterly-item { display: flex; flex-direction: column; border-left: 3px solid var(--purple-light); padding-left: 10px; }
+.quarterly-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); }
+.quarterly-amount { font-size: 1rem; font-weight: 900; color: var(--purple-mid); }
+
+.dup-banner { max-width: 960px; margin: 8px auto 0; padding: 0 16px; display: none; }
+.dup-banner.visible { display: flex; }
+.dup-alert { background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 12px; padding: 9px 16px; color: var(--danger); font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 8px; width: 100%; }
+
+/* MAIN */
+.main-content { max-width: 960px; margin: 12px auto 100px; padding: 0 16px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.section-title { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.section-actions { display: flex; gap: 6px; }
+.manage-btn { background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 4px 12px; font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.manage-btn:hover { border-color: var(--purple-light); color: var(--purple-mid); }
+
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-muted); }
+.empty-text { font-size: 1rem; font-weight: 700; }
+.empty-sub { font-size: 0.82rem; margin-top: 4px; }
+
+/* CARDS */
+.script-card { background: white; border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden; border: 1.5px solid var(--border); transition: box-shadow 0.2s; }
+.script-card:hover { box-shadow: var(--shadow-lg); }
+.script-card.duplicate { border-color: #fca5a5 !important; background: #fff0f0 !important; }
+
+.card-top { padding: 11px 14px 9px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.card-left { flex: 1; min-width: 0; }
+.card-patient { font-size: 0.95rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-meta { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+.card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+.card-tag { display: inline-block; background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px; padding: 2px 9px; font-size: 0.68rem; font-weight: 700; color: var(--purple-mid); }
+.card-tag.lab-tag { color: #0369a1; background: #e0f2fe; border-color: #bae6fd; }
+.card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+
+.status-badge { border-radius: 20px; padding: 3px 10px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+.status-sent { background: #dbeafe; color: var(--status-sent); }
+.status-progress { background: #fef3c7; color: #d97706; }
+.status-completed { background: #ede9fe; color: var(--status-completed); }
+.status-received { background: #d1fae5; color: #059669; }
+.dup-badge { background: #fef2f2; color: var(--danger); border-radius: 20px; padding: 2px 8px; font-size: 0.65rem; font-weight: 800; }
+
+.card-middle { padding: 7px 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.card-dates { display: flex; gap: 14px; flex-wrap: wrap; }
+.card-date-item { display: flex; flex-direction: column; }
+.date-label { font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.date-val { font-size: 0.76rem; font-weight: 700; }
+.invoice-block { text-align: right; }
+.invoice-amount { font-size: 0.95rem; font-weight: 900; color: var(--purple-mid); }
+.invoice-amount.unbilled { color: #ccc; font-style: italic; font-size: 0.78rem; font-weight: 600; }
+.invoice-num { font-size: 0.67rem; font-weight: 700; color: var(--text-muted); margin-top: 1px; }
+
+.card-notes { padding: 6px 14px; font-size: 0.75rem; color: var(--text-muted); font-style: italic; border-top: 1px dashed var(--border); }
+
+.card-actions-row { padding: 7px 14px 9px; border-top: 1px solid var(--border); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.quick-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+.quick-btn { border: none; border-radius: 8px; padding: 4px 10px; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.quick-btn.received { background: #d1fae5; color: #059669; }
+.quick-btn.received:hover { background: #a7f3d0; }
+.quick-btn.progress { background: #fef3c7; color: #d97706; }
+.quick-btn.progress:hover { background: #fde68a; }
+.quick-btn.completed { background: #ede9fe; color: #7c3aed; }
+.quick-btn.completed:hover { background: #ddd6fe; }
+.edit-btns { display: flex; gap: 5px; }
+.action-btn { background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 4px 10px; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.action-btn:hover { border-color: var(--purple-light); color: var(--purple-mid); }
+.action-btn.danger:hover { border-color: #fca5a5; color: var(--danger); }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(30,20,80,0.45); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: white; border-radius: 24px 24px 0 0; width: 100%; max-width: 560px; padding: 20px 20px 36px; max-height: 92vh; overflow-y: auto; animation: slideUp 0.25s ease; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-size: 1.05rem; font-weight: 900; margin-bottom: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.form-row.single { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group label { font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.form-group input, .form-group select, .form-group textarea { border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 11px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: var(--text); outline: none; background: white; transition: border-color 0.15s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--purple-light); }
+.form-group textarea { resize: vertical; min-height: 65px; }
+.btn-primary { background: var(--purple-mid); color: white; border: none; border-radius: 12px; padding: 11px; width: 100%; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.92rem; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+.btn-primary:hover { background: var(--purple-dark); }
+.btn-cancel { background: var(--bg); color: var(--text-muted); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px; width: 100%; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 6px; }
+
+.list-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; }
+.list-item:last-child { border-bottom: none; }
+.remove-btn { background: none; border: 1.5px solid #fca5a5; border-radius: 8px; padding: 3px 10px; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--danger); cursor: pointer; }
+.add-row { display: flex; gap: 8px; margin-top: 12px; }
+.add-input { flex: 1; border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 12px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; outline: none; }
+.add-input:focus { border-color: var(--purple-light); }
+.add-btn { background: var(--purple-mid); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.82rem; cursor: pointer; }
+
+.export-options { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.export-btn-big { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--text); cursor: pointer; text-align: left; transition: all 0.15s; display: flex; align-items: center; gap: 12px; }
+.export-btn-big:hover { border-color: var(--purple-light); background: #f0eefb; }
+.export-desc { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; display: block; margin-top: 2px; }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--purple-dark); color: white; padding: 10px 22px; border-radius: 24px; font-weight: 700; font-size: 0.82rem; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-logo">Smile Services of New York<span>Lab Script Tracker</span></div>
+    <input class="header-search" type="text" placeholder="Search by patient name or last name..." id="searchInput" oninput="renderAll()">
+    <div class="header-actions">
+      <button class="btn-scan" onclick="openScanModal()">Scan Script</button>
+      <button class="btn-gold" onclick="openAddModal()">+ New Script</button>
+    </div>
+  </div>
+</header>
+
+<div class="filters-wrap">
+  <div class="filters-inner">
+    <div class="filter-row">
+      <span class="filter-label">Lab</span>
+      <div class="filter-group" id="labFilters">
+        <button class="filter-btn active" onclick="setFilter('lab','all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('lab','Sent Out',this)">Sent Out</button>
+        <button class="filter-btn" onclick="setFilter('lab','Received',this)">Received</button>
+      </div>
+      <div class="filter-right">
+        <select class="filter-select" id="doctorFilter" onchange="renderAll()"><option value="all">All Doctors</option></select>
+        <select class="filter-select" id="monthFilter" onchange="renderAll()"><option value="all">All Months</option></select>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Case</span>
+      <div class="filter-group" id="caseFilters">
+        <button class="filter-btn active" onclick="setFilter('case','all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('case','In Progress',this)">In Progress</button>
+        <button class="filter-btn" onclick="setFilter('case','Completed',this)">Completed</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Sort</span>
+      <div class="filter-group" id="sortFilters">
+        <button class="filter-btn active" onclick="setFilter('sort','dateWritten',this)">Date Written</button>
+        <button class="filter-btn" onclick="setFilter('sort','dateReceived',this)">Date Received</button>
+        <button class="filter-btn" onclick="setFilter('sort','lastName',this)">Last Name</button>
+      </div>
+      <button class="filter-btn" onclick="setThisMonth()" style="margin-left:auto">This Month</button>
+    </div>
+  </div>
+</div>
+
+<div class="dup-banner" id="dupBanner"><div class="dup-alert"><span id="dupText"></span></div></div>
+
+<div class="monthly-banner" id="monthlyBanner">
+  <div class="monthly-card">
+    <div class="monthly-header">
+      <div class="monthly-title" id="monthlyTitle">Monthly Totals</div>
+      <div class="monthly-grand" id="monthlyGrand"></div>
+    </div>
+    <div class="monthly-grid" id="monthlyGrid"></div>
+  </div>
+</div>
+
+<div class="quarterly-banner" id="quarterlyBanner">
+  <div class="quarterly-card">
+    <div class="quarterly-title" id="quarterlyTitle">Quarterly Totals</div>
+    <div class="quarterly-grid" id="quarterlyGrid"></div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="section-header">
+    <span class="section-title" id="listTitle">All Lab Scripts</span>
+    <div class="section-actions">
+      <button class="manage-btn" onclick="openLabsModal()">Manage Labs</button>
+      <button class="manage-btn" onclick="openDoctorsModal()">Manage Doctors</button>
+    </div>
+  </div>
+  <div id="scriptList"></div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="scriptModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">New Lab Script</div>
+    <input type="hidden" id="editId">
+    <div class="form-row">
+      <div class="form-group"><label>Patient First Name</label><input type="text" id="fFirstName" placeholder="First name"></div>
+      <div class="form-group"><label>Patient Last Name</label><input type="text" id="fLastName" placeholder="Last name"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Doctor</label><select id="fDoctor"></select></div>
+      <div class="form-group"><label>Lab Company</label><select id="fLab"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date Written</label><input type="date" id="fDateWritten"></div>
+      <div class="form-group"><label>Type of Work</label>
+        <select id="fWorkType">
+          <option value="">Select type...</option>
+          <option>Crown</option><option>Bridge</option><option>Denture</option>
+          <option>Partial Denture</option><option>Implant Crown</option><option>Veneer</option>
+          <option>Emax Crown</option><option>Zirconia</option><option>Inlay / Onlay</option>
+          <option>Flipper</option><option>Flexi Flipper</option><option>Night Guard</option>
+          <option>Retainer</option><option>Repair</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Lab Status</label><select id="fLabStatus"><option>Sent Out</option><option>Received</option></select></div>
+      <div class="form-group"><label>Case Status</label><select id="fCaseStatus"><option>In Progress</option><option>Completed</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date Sent Out</label><input type="date" id="fDateSent"></div>
+      <div class="form-group"><label>Date Received</label><input type="date" id="fDateReceived"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Invoice Amount ($)</label><input type="number" id="fInvoice" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="form-group"><label>Invoice Number</label><input type="text" id="fInvoiceNum" placeholder="e.g. INV-00123"></div>
+    </div>
+    <div class="form-row single">
+      <div class="form-group"><label>Description / Notes</label><textarea id="fNotes" placeholder="Work description or notes..."></textarea></div>
+    </div>
+    <button class="btn-primary" onclick="saveScript()">Save Lab Script</button>
+    <button class="btn-cancel" onclick="closeModal('scriptModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- DOCTORS MODAL -->
+<div class="modal-overlay" id="doctorsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Manage Doctors</div>
+    <div id="doctorListEl"></div>
+    <div class="add-row">
+      <input class="add-input" type="text" id="newDoctorInput" placeholder="Dr. Last Name">
+      <button class="add-btn" onclick="addDoctor()">Add</button>
+    </div>
+    <button class="btn-cancel" style="margin-top:14px" onclick="closeModal('doctorsModal')">Done</button>
+  </div>
+</div>
+
+<!-- LABS MODAL -->
+<div class="modal-overlay" id="labsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Manage Lab Companies</div>
+    <div id="labListEl"></div>
+    <div class="add-row">
+      <input class="add-input" type="text" id="newLabInput" placeholder="Lab company name">
+      <button class="add-btn" onclick="addLab()">Add</button>
+    </div>
+    <button class="btn-cancel" style="margin-top:14px" onclick="closeModal('labsModal')">Done</button>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Export</div>
+    <div class="export-options">
+      <button class="export-btn-big" onclick="exportCSV()">
+        <div style="font-size:1.4rem">CSV</div>
+        <div><div>Export to CSV</div><span class="export-desc">Open in Excel or Google Sheets</span></div>
+      </button>
+      <button class="export-btn-big" onclick="exportPrint()">
+        <div style="font-size:1.4rem">PDF</div>
+        <div><div>Print / Save as PDF</div><span class="export-desc">Print-friendly summary view</span></div>
+      </button>
+    </div>
+    <button class="btn-cancel" style="margin-top:14px" onclick="closeModal('exportModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- SCAN MODAL -->
+<div class="modal-overlay" id="scanModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Scan Lab Script</div>
+
+    <div class="api-key-row">
+      <label>Anthropic API Key</label>
+      <input class="api-key-input" type="password" id="apiKeyInput" placeholder="sk-ant-..." oninput="saveApiKey()">
+      <span class="api-key-hint">Your key is saved locally on this device only. Never shared.</span>
+    </div>
+
+    <div class="scan-drop-area" id="scanDropArea" onclick="document.getElementById('scanFileInput').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+      <div class="scan-drop-title">Tap to take photo or upload image</div>
+      <div class="scan-drop-sub">Photo of the handwritten lab script slip</div>
+      <input type="file" id="scanFileInput" accept="image/*" capture="environment" style="display:none" onchange="onFileSelected(event)">
+    </div>
+
+    <img id="scanPreview" class="scan-preview">
+    <div class="scan-status" id="scanStatus"></div>
+
+    <div class="scan-result-box" id="scanResultBox">
+      <div class="scan-result-title">Extracted from script</div>
+      <div id="scanResultRows"></div>
+    </div>
+
+    <button class="btn-primary" id="scanFillBtn" style="display:none" onclick="fillFormFromScan()">Fill Form with This Data</button>
+    <button class="btn-primary" id="scanBtn" style="display:none;background:var(--purple-light)" onclick="runScan()">Scan Now</button>
+    <button class="btn-cancel" onclick="closeModal('scanModal')">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'smileservices_labscripts_v1';
+const DOCTORS_KEY = 'smileservices_doctors_v1';
+const LABS_KEY    = 'smileservices_labs_v1';
+
+let scripts = [], doctors = [], labs = [];
+let activeLabFilter = 'all', activeCaseFilter = 'all', activeSort = 'dateWritten';
+
+function uid() { return Math.random().toString(36).substr(2,9); }
+
+function load() {
+  scripts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  doctors = JSON.parse(localStorage.getItem(DOCTORS_KEY) || '[]');
+  labs    = JSON.parse(localStorage.getItem(LABS_KEY)    || '[]');
+  if (!doctors.length) doctors = ['Dr. Arzanipour','Dr. Rubinoff'];
+  if (!labs.length)    labs    = ['Golden Cusp Dental Lab'];
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(scripts));
+  localStorage.setItem(DOCTORS_KEY, JSON.stringify(doctors));
+  localStorage.setItem(LABS_KEY,    JSON.stringify(labs));
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ---- FILTERS ----
+function setFilter(type, val, btn) {
+  if (type==='lab')  { activeLabFilter=val;  document.querySelectorAll('#labFilters  .filter-btn').forEach(b=>b.classList.remove('active')); }
+  if (type==='case') { activeCaseFilter=val; document.querySelectorAll('#caseFilters .filter-btn').forEach(b=>b.classList.remove('active')); }
+  if (type==='sort') { activeSort=val;       document.querySelectorAll('#sortFilters .filter-btn').forEach(b=>b.classList.remove('active')); }
+  btn.classList.add('active');
+  renderAll();
+}
+
+function setThisMonth() {
+  const now = new Date();
+  const val = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('monthFilter').value = val;
+  renderAll();
+}
+
+function populateFilters() {
+  const df = document.getElementById('doctorFilter');
+  const cur = df.value;
+  df.innerHTML = '<option value="all">All Doctors</option>';
+  doctors.forEach(d => { const o=document.createElement('option'); o.value=d; o.textContent=d; if(d===cur)o.selected=true; df.appendChild(o); });
+
+  const mf = document.getElementById('monthFilter');
+  const months = new Set();
+  scripts.forEach(s => { if(s.dateWritten){ const d=new Date(s.dateWritten); months.add(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`); } });
+  const curM = mf.value;
+  mf.innerHTML = '<option value="all">All Months</option>';
+  [...months].sort().reverse().forEach(m => {
+    const [y,mo]=m.split('-');
+    const label=new Date(y,mo-1).toLocaleString('default',{month:'long',year:'numeric'});
+    const o=document.createElement('option'); o.value=m; o.textContent=label; if(m===curM)o.selected=true; mf.appendChild(o);
+  });
+}
+
+function getFiltered() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const docF   = document.getElementById('doctorFilter').value;
+  const monF   = document.getElementById('monthFilter').value;
+  return scripts.filter(s => {
+    if (activeLabFilter!=='all'  && s.labStatus!==activeLabFilter)   return false;
+    if (activeCaseFilter!=='all' && s.caseStatus!==activeCaseFilter) return false;
+    if (docF!=='all' && s.doctor!==docF) return false;
+    if (monF!=='all' && s.dateWritten) {
+      const d=new Date(s.dateWritten);
+      if (`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`!==monF) return false;
+    }
+    if (search) {
+      const full=(s.patient||'').toLowerCase();
+      const last=full.trim().split(' ').pop();
+      if (!full.includes(search) && !last.includes(search)) return false;
+    }
+    return true;
+  });
+}
+
+function getSorted(arr) {
+  return [...arr].sort((a,b) => {
+    if (activeSort==='lastName') { const la=(a.patient||'').trim().split(' ').pop().toLowerCase(); const lb=(b.patient||'').trim().split(' ').pop().toLowerCase(); return la.localeCompare(lb); }
+    if (activeSort==='dateReceived') return new Date(b.dateReceived||0)-new Date(a.dateReceived||0);
+    return new Date(b.dateWritten||0)-new Date(a.dateWritten||0);
+  });
+}
+
+// ---- DUPLICATES ----
+function findDuplicates() {
+  const dups = new Set(), seen = {};
+  scripts.forEach(s => {
+    if (s.invoice && parseFloat(s.invoice)>0 && s.invoiceNum && s.invoiceNum.trim()) {
+      const key=`${s.doctor}_${(s.patient||'').toLowerCase().trim()}_${parseFloat(s.invoice).toFixed(2)}_${s.invoiceNum.trim()}`;
+      if (seen[key]) { dups.add(s.id); dups.add(seen[key]); } else seen[key]=s.id;
+    }
+  });
+  return dups;
+}
+
+// ---- BANNERS ----
+function updateMonthlyBanner() {
+  const monF=document.getElementById('monthFilter').value;
+  const banner=document.getElementById('monthlyBanner');
+  const qBanner=document.getElementById('quarterlyBanner');
+  if (monF==='all') { banner.classList.remove('visible'); showQuarterlyBanner(); return; }
+  banner.classList.add('visible'); qBanner.classList.remove('visible');
+  const [y,mo]=monF.split('-');
+  document.getElementById('monthlyTitle').textContent=`Totals — ${new Date(y,mo-1).toLocaleString('default',{month:'long',year:'numeric'})}`;
+  const totals={};
+  let grand=0;
+  doctors.forEach(d=>totals[d]={amt:0,count:0});
+  scripts.forEach(s => {
+    if (!s.dateWritten) return;
+    const d=new Date(s.dateWritten);
+    const m=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if (m===monF) {
+      const amt=parseFloat(s.invoice)||0;
+      if (!totals[s.doctor]) totals[s.doctor]={amt:0,count:0};
+      totals[s.doctor].amt+=amt; totals[s.doctor].count+=1; grand+=amt;
+    }
+  });
+  document.getElementById('monthlyGrand').textContent=`Total: $${grand.toFixed(2)}`;
+  const grid=document.getElementById('monthlyGrid');
+  grid.innerHTML='';
+  let hasAny=false;
+  Object.entries(totals).forEach(([doc,{amt,count}]) => {
+    if (count>0) { hasAny=true; grid.innerHTML+=`<div class="monthly-item"><span class="monthly-doctor">${doc}</span><span class="monthly-amount">$${amt.toFixed(2)}</span><span class="monthly-count">${count} case${count!==1?'s':''}</span></div>`; }
+  });
+  if (!hasAny) grid.innerHTML='<div style="color:rgba(255,255,255,0.6);font-size:0.82rem">No billed scripts this month.</div>';
+}
+
+function showQuarterlyBanner() {
+  const qBanner=document.getElementById('quarterlyBanner');
+  const docF=document.getElementById('doctorFilter').value;
+  const quarters={};
+  scripts.forEach(s => {
+    if (!s.dateWritten) return;
+    if (docF!=='all' && s.doctor!==docF) return;
+    const d=new Date(s.dateWritten);
+    const q=`Q${Math.ceil((d.getMonth()+1)/3)} ${d.getFullYear()}`;
+    if (!quarters[q]) quarters[q]=0;
+    quarters[q]+=parseFloat(s.invoice)||0;
+  });
+  if (!Object.keys(quarters).length) { qBanner.classList.remove('visible'); return; }
+  qBanner.classList.add('visible');
+  document.getElementById('quarterlyTitle').textContent=docF!=='all'?`Quarterly Totals — ${docF}`:'Quarterly Totals — All Doctors';
+  document.getElementById('quarterlyGrid').innerHTML=Object.entries(quarters).sort().map(([q,amt])=>
+    `<div class="quarterly-item"><span class="quarterly-label">${q}</span><span class="quarterly-amount">$${amt.toFixed(2)}</span></div>`
+  ).join('');
+}
+
+// ---- RENDER ----
+function renderAll() {
+  populateFilters();
+  const filtered=getFiltered();
+  const dups=findDuplicates();
+  updateMonthlyBanner();
+
+  const dupBanner=document.getElementById('dupBanner');
+  const dupItems=filtered.filter(s=>dups.has(s.id));
+  if (dupItems.length) { dupBanner.classList.add('visible'); document.getElementById('dupText').textContent=`${dupItems.length} possible duplicate invoice${dupItems.length>1?'s':''} — same doctor, patient & invoice number.`; }
+  else dupBanner.classList.remove('visible');
+
+  const list=document.getElementById('scriptList');
+  if (!filtered.length) { list.innerHTML=`<div class="empty-state"><div class="empty-text">No lab scripts found</div><div class="empty-sub">Add a new script or adjust your filters</div></div>`; return; }
+
+  const labC={'Sent Out':'status-sent','Received':'status-received'};
+  const caseC={'In Progress':'status-progress','Completed':'status-completed'};
+
+  list.innerHTML=getSorted(filtered).map(s => {
+    const isDup=dups.has(s.id);
+    const inv=s.invoice&&parseFloat(s.invoice)>0
+      ?`<div class="invoice-block"><div class="invoice-amount">$${parseFloat(s.invoice).toFixed(2)}</div>${s.invoiceNum?`<div class="invoice-num">#${s.invoiceNum}</div>`:''}</div>`
+      :`<div class="invoice-block"><span class="invoice-amount unbilled">Unbilled</span></div>`;
+    const sentDate=s.dateSent?`<div class="card-date-item"><span class="date-label">Sent</span><span class="date-val">${fmtDate(s.dateSent)}</span></div>`:'';
+    const recDate=s.dateReceived?`<div class="card-date-item"><span class="date-label">Received</span><span class="date-val">${fmtDate(s.dateReceived)}</span></div>`:'';
+    const notes=s.notes?`<div class="card-notes">${s.notes}</div>`:'';
+    const dupBadge=isDup?`<span class="dup-badge">Duplicate?</span>`:'';
+    const tags=[];
+    if (s.workType) tags.push(`<span class="card-tag">${s.workType}</span>`);
+    if (s.lab)      tags.push(`<span class="card-tag lab-tag">${s.lab}</span>`);
+    const quickBtns=[];
+    if (s.labStatus!=='Received')    quickBtns.push(`<button class="quick-btn received"  onclick="quickUpdate('${s.id}','labStatus','Received')">Mark Received</button>`);
+    if (s.caseStatus!=='Completed')  quickBtns.push(`<button class="quick-btn completed" onclick="quickUpdate('${s.id}','caseStatus','Completed')">Mark Completed</button>`);
+    if (s.caseStatus!=='In Progress')quickBtns.push(`<button class="quick-btn progress"  onclick="quickUpdate('${s.id}','caseStatus','In Progress')">In Progress</button>`);
+    return `
+    <div class="script-card${isDup?' duplicate':''}">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-patient">${s.patient}</div>
+          <div class="card-meta">${s.doctor} · Written ${fmtDate(s.dateWritten)}</div>
+          ${tags.length?`<div class="card-tags">${tags.join('')}</div>`:''}
+        </div>
+        <div class="card-right">
+          <span class="status-badge ${labC[s.labStatus]||''}">${s.labStatus||'Sent Out'}</span>
+          <span class="status-badge ${caseC[s.caseStatus]||''}">${s.caseStatus||'In Progress'}</span>
+          ${dupBadge}
+        </div>
+      </div>
+      ${notes}
+      <div class="card-middle">
+        <div class="card-dates">${sentDate}${recDate}</div>
+        ${inv}
+      </div>
+      <div class="card-actions-row">
+        <div class="quick-btns">${quickBtns.join('')}</div>
+        <div class="edit-btns">
+          <button class="action-btn" onclick="openEditModal('${s.id}')">Edit</button>
+          <button class="action-btn danger" onclick="deleteScript('${s.id}')">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt=new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function quickUpdate(id, field, value) {
+  const s=scripts.find(x=>x.id===id); if(!s)return;
+  s[field]=value;
+  if (field==='labStatus'&&value==='Received'&&!s.dateReceived) s.dateReceived=new Date().toISOString().split('T')[0];
+  save(); renderAll(); toast('Updated to '+value);
+}
+
+function deleteScript(id) { scripts=scripts.filter(s=>s.id!==id); save(); renderAll(); toast('Script deleted.'); }
+
+// ---- MODALS ----
+function populateDoctorSelect(sel) {
+  const el=document.getElementById('fDoctor'); el.innerHTML='';
+  doctors.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;if(d===sel)o.selected=true;el.appendChild(o);});
+}
+function populateLabSelect(sel) {
+  const el=document.getElementById('fLab'); el.innerHTML='<option value="">Select lab...</option>';
+  labs.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l;if(l===sel)o.selected=true;el.appendChild(o);});
+}
+
+function openAddModal() {
+  document.getElementById('modalTitle').textContent='New Lab Script';
+  document.getElementById('editId').value='';
+  document.getElementById('fFirstName').value='';
+  document.getElementById('fLastName').value='';
+  document.getElementById('fDateWritten').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fDateSent').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fDateReceived').value='';
+  document.getElementById('fWorkType').value='';
+  document.getElementById('fLabStatus').value='Sent Out';
+  document.getElementById('fCaseStatus').value='In Progress';
+  document.getElementById('fInvoice').value='';
+  document.getElementById('fInvoiceNum').value='';
+  document.getElementById('fNotes').value='';
+  populateDoctorSelect(''); populateLabSelect('');
+  document.getElementById('scriptModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const s=scripts.find(x=>x.id===id); if(!s)return;
+  document.getElementById('modalTitle').textContent='Edit Lab Script';
+  document.getElementById('editId').value=id;
+  const parts=(s.patient||'').trim().split(' ');
+  document.getElementById('fFirstName').value=parts.length>1?parts.slice(0,-1).join(' '):parts[0]||'';
+  document.getElementById('fLastName').value=parts.length>1?parts[parts.length-1]:'';
+  document.getElementById('fDateWritten').value=s.dateWritten||'';
+  document.getElementById('fWorkType').value=s.workType||'';
+  document.getElementById('fLabStatus').value=s.labStatus||'Sent Out';
+  document.getElementById('fCaseStatus').value=s.caseStatus||'In Progress';
+  document.getElementById('fDateSent').value=s.dateSent||'';
+  document.getElementById('fDateReceived').value=s.dateReceived||'';
+  document.getElementById('fInvoice').value=s.invoice||'';
+  document.getElementById('fInvoiceNum').value=s.invoiceNum||'';
+  document.getElementById('fNotes').value=s.notes||'';
+  populateDoctorSelect(s.doctor); populateLabSelect(s.lab||'');
+  document.getElementById('scriptModal').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function saveScript() {
+  const first=document.getElementById('fFirstName').value.trim();
+  const last=document.getElementById('fLastName').value.trim();
+  if (!first&&!last) { alert('Patient name is required.'); return; }
+  const patient=[first,last].filter(Boolean).join(' ');
+  const id=document.getElementById('editId').value||uid();
+  const existing=scripts.find(s=>s.id===id);
+  const entry={id,patient,
+    doctor:document.getElementById('fDoctor').value,
+    lab:document.getElementById('fLab').value,
+    dateWritten:document.getElementById('fDateWritten').value,
+    workType:document.getElementById('fWorkType').value,
+    labStatus:document.getElementById('fLabStatus').value,
+    caseStatus:document.getElementById('fCaseStatus').value,
+    dateSent:document.getElementById('fDateSent').value,
+    dateReceived:document.getElementById('fDateReceived').value,
+    invoice:document.getElementById('fInvoice').value,
+    invoiceNum:document.getElementById('fInvoiceNum').value.trim(),
+    notes:document.getElementById('fNotes').value.trim(),
+  };
+  if (existing) { scripts[scripts.indexOf(existing)]=entry; toast('Script updated!'); }
+  else { scripts.push(entry); toast('Script added!'); }
+  save(); closeModal('scriptModal'); renderAll();
+}
+
+// ---- DOCTORS ----
+function openDoctorsModal() { renderDoctorList(); document.getElementById('doctorsModal').classList.add('open'); }
+function renderDoctorList() {
+  document.getElementById('doctorListEl').innerHTML=doctors.map(d=>
+    `<div class="list-item"><span>${d}</span><button class="remove-btn" data-name="${d}" onclick="removeDoctor(this)">Remove</button></div>`
+  ).join('');
+}
+function addDoctor() {
+  const val=document.getElementById('newDoctorInput').value.trim();
+  if (!val||doctors.includes(val)) return;
+  doctors.push(val); document.getElementById('newDoctorInput').value='';
+  save(); renderDoctorList(); toast(val+' added!');
+}
+function removeDoctor(btn) { doctors=doctors.filter(d=>d!==btn.getAttribute('data-name')); save(); renderDoctorList(); toast('Doctor removed.'); }
+
+// ---- LABS ----
+function openLabsModal() { renderLabList(); document.getElementById('labsModal').classList.add('open'); }
+function renderLabList() {
+  document.getElementById('labListEl').innerHTML=labs.map(l=>
+    `<div class="list-item"><span>${l}</span><button class="remove-btn" data-name="${l}" onclick="removeLab(this)">Remove</button></div>`
+  ).join('');
+}
+function addLab() {
+  const val=document.getElementById('newLabInput').value.trim();
+  if (!val||labs.includes(val)) return;
+  labs.push(val); document.getElementById('newLabInput').value='';
+  save(); renderLabList(); toast(val+' added!');
+}
+function removeLab(btn) { labs=labs.filter(l=>l!==btn.getAttribute('data-name')); save(); renderLabList(); toast('Lab removed.'); }
+
+// ---- EXPORT ----
+function openExportModal() { document.getElementById('exportModal').classList.add('open'); }
+
+function exportCSV() {
+  const data=getFiltered();
+  const headers=['Patient','Doctor','Lab','Date Written','Date Sent','Date Received','Lab Status','Case Status','Work Type','Invoice Amount','Invoice #','Notes'];
+  const rows=data.map(s=>[
+    `"${s.patient||''}"`,`"${s.doctor||''}"`,`"${s.lab||''}"`,
+    s.dateWritten||'',s.dateSent||'',s.dateReceived||'',
+    s.labStatus||'',s.caseStatus||'',`"${s.workType||''}"`,
+    s.invoice||'',s.invoiceNum||'',`"${(s.notes||'').replace(/"/g,'""')}"`
+  ].join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  const docF=document.getElementById('doctorFilter').value;
+  const monF=document.getElementById('monthFilter').value;
+  a.download=`LabScripts_${docF!=='all'?docF.replace('Dr.','').trim():'All'}_${monF!=='all'?monF:'all'}.csv`;
+  a.click(); closeModal('exportModal'); toast('CSV downloaded!');
+}
+
+function exportPrint() {
+  const data=getSorted(getFiltered());
+  const docF=document.getElementById('doctorFilter').value;
+  const monF=document.getElementById('monthFilter').value;
+  let title='Smile Services of New York — Lab Scripts';
+  if (docF!=='all') title+=` | ${docF}`;
+  if (monF!=='all') { const [y,mo]=monF.split('-'); title+=` | ${new Date(y,mo-1).toLocaleString('default',{month:'long',year:'numeric'})}`; }
+  const rows=data.map(s=>`<tr><td>${s.patient||''}</td><td>${s.doctor||''}</td><td>${s.lab||''}</td><td>${fmtDate(s.dateWritten)}</td><td>${fmtDate(s.dateSent)}</td><td>${fmtDate(s.dateReceived)}</td><td>${s.labStatus||''}</td><td>${s.caseStatus||''}</td><td>${s.workType||''}</td><td>${s.invoice&&parseFloat(s.invoice)>0?'$'+parseFloat(s.invoice).toFixed(2):''}</td><td>${s.invoiceNum||''}</td><td>${s.notes||''}</td></tr>`).join('');
+  const total=data.reduce((sum,s)=>sum+(parseFloat(s.invoice)||0),0);
+  const win=window.open('','_blank');
+  try {
+    const win=window.open('','_blank');
+    if (!win) { toast('Please allow popups to print.'); closeModal('exportModal'); return; }
+    win.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>body{font-family:Arial,sans-serif;font-size:11px;padding:20px}h2{font-size:14px;margin-bottom:4px}p{font-size:10px;color:#666;margin-bottom:12px}table{width:100%;border-collapse:collapse}th{background:#3c3089;color:white;padding:6px 8px;text-align:left;font-size:10px}td{padding:5px 8px;border-bottom:1px solid #eee;font-size:10px}tr:nth-child(even){background:#f9f9f9}.total{font-weight:bold;text-align:right;margin-top:10px;font-size:12px}@media print{button{display:none}}</style></head><body><h2>${title}</h2><p>Generated: ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p><table><thead><tr><th>Patient</th><th>Doctor</th><th>Lab</th><th>Written</th><th>Sent</th><th>Received</th><th>Lab Status</th><th>Case Status</th><th>Work Type</th><th>Amount</th><th>Invoice #</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table><p class="total">Total Billed: $${total.toFixed(2)}</p><script>window.onload=()=>window.print()<\/script></body></html>`);
+    win.document.close();
+  } catch(e) { toast('Print not supported on this browser.'); }
+  closeModal('exportModal');
+}
+
+// ---- SEED ----
+load();
+(function seed() {
+  if (!doctors.includes('Dr. Arzanipour')) doctors.push('Dr. Arzanipour');
+  if (!doctors.includes('Dr. Rubinoff'))   doctors.push('Dr. Rubinoff');
+  if (!labs.includes('Golden Cusp Dental Lab')) labs.push('Golden Cusp Dental Lab');
+  const entries=[
+    {doctor:'Dr. Arzanipour',patient:'Ariadna Loayza', dateSent:'2026-01-04',dateReceived:'2026-01-06',description:'Setup Upper',                                         invoice:'0',  invoiceNum:'49590', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Caesar Chumbay', dateSent:'2026-01-07',dateReceived:'2026-01-07',description:'Replace #9',                                          invoice:'150',invoiceNum:'50353', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Millet Johnson', dateSent:'2026-01-08',dateReceived:'2026-01-09',description:'Custom Upper Tray (Dr. VR will redo case for Dr. A)', invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Luis Roman',     dateSent:'2026-01-09',dateReceived:'2026-01-09',description:'',                                                     invoice:'150',invoiceNum:'50351', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Clarice Dennis', dateSent:'2026-01-10',dateReceived:'2026-01-10',description:'',                                                     invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Ariadna Loayza', dateSent:'2026-01-11',dateReceived:'2026-01-21',description:'Shade change 2, 12, 13, 14, 15 / Process Upper',      invoice:'200',invoiceNum:'50215', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Lenny Tobon',    dateSent:'2026-01-15',dateReceived:'2026-01-15',description:'#8 Flipper',                                           invoice:'145',invoiceNum:'101640',lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Lenny Tobon',    dateSent:'2026-01-17',dateReceived:'2026-01-28',description:'#8 Flexi Flipper 1-2 Teeth',                          invoice:'220',invoiceNum:'50704', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'David Barrios',  dateSent:'2026-01-11',dateReceived:'2026-01-15',description:'Add teeth & process',                                 invoice:'150',invoiceNum:'49974', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Ariadna Loayza', dateSent:'2026-01-11',dateReceived:'2026-01-21',description:'Emax Crowns Anterior Layered #9',                     invoice:'200',invoiceNum:'50280', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Desiree Rodgers',dateSent:'2026-01-18',dateReceived:'2026-01-28',description:'Acrylic Flipper 1-3 Teeth #6',                        invoice:'145',invoiceNum:'50644', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Jordi Barrios',  dateSent:'2026-01-19',dateReceived:'2026-01-28',description:'Zirconia #19',                                        invoice:'130',invoiceNum:'50708', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'David Barrios',  dateSent:'2026-01-27',dateReceived:'2026-01-29',description:'#29 Repair Clasp',                                    invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab'},
+    // February - Dr. Arzanipour
+    {doctor:'Dr. Arzanipour',patient:'Clarice Dennis', dateSent:'2026-02-01',dateReceived:'',           description:'',                                                                    invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    {doctor:'Dr. Arzanipour',patient:'Anwar Khan',     dateSent:'2026-02-05',dateReceived:'2026-02-05', description:'Add tooth #9, 10 / wrought wire',                                     invoice:'220',invoiceNum:'101594',lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Beth Gilbert',   dateSent:'2026-02-28',dateReceived:'2026-03-09', description:'Nightguard Upper — March Bill',                                       invoice:'120',invoiceNum:'52649', lab:'Golden Cusp Dental Lab'},
+    // March - Dr. Arzanipour
+    {doctor:'Dr. Arzanipour',patient:'Surinder Kaur',  dateSent:'2026-03-28',dateReceived:'',           description:'April Bill',                                                          invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    {doctor:'Dr. Arzanipour',patient:'Felix Martinez', dateSent:'2026-03-31',dateReceived:'',           description:'April Bill',                                                          invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    // February - Dr. Rubinoff
+    {doctor:'Dr. Rubinoff',  patient:'Nora Nardone',   dateSent:'2026-02-01',dateReceived:'2026-02-05', description:'Zirconia #4',                                                         invoice:'130',invoiceNum:'51176', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Cislyn Martino', dateSent:'2026-02-03',dateReceived:'',           description:'',                                                                    invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Peter Lopipero', dateSent:'2026-02-03',dateReceived:'',           description:'',                                                                    invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Julie Butler',   dateSent:'2026-02-03',dateReceived:'2026-02-11', description:'Screw retain implant crown',                                          invoice:'350',invoiceNum:'51459', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', dateSent:'2026-02-17',dateReceived:'2026-02-18', description:'Custom Tray Upper/Lower',                                             invoice:'0',  invoiceNum:'51761', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Zheng Ke Wu',    dateSent:'2026-02-22',dateReceived:'2026-02-24', description:'Upper + Lower Bite tray, Bite Block Full Dentures',                   invoice:'0',  invoiceNum:'6039',  lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Barbara Calgagni',dateSent:'2026-02-22',dateReceived:'2026-02-25',description:'#7,6 Emax Crowns [TXT has no 7,6 it was 2,3]',                       invoice:'300',invoiceNum:'6041',  lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Peter Lopipero', dateSent:'2026-02-26',dateReceived:'',           description:'March Bill',                                                          invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Sandra Kall',    dateSent:'2026-02-26',dateReceived:'',           description:'March Bill',                                                          invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    // March - Dr. Rubinoff (Feb March Bills resolved)
+    {doctor:'Dr. Rubinoff',  patient:'Peter Lopipero', dateSent:'2026-02-26',dateReceived:'2026-03-05', description:'Bridge Non-Precious (5-13), Lingual Metal (6-11), Flexi Flipper (3-4)',invoice:'1535',invoiceNum:'52495',lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Sandra Kall',    dateSent:'2026-02-26',dateReceived:'2026-03-05', description:'Screw retain implant crown (5)',                                       invoice:'350',invoiceNum:'52476', lab:'Golden Cusp Dental Lab'},
+    // March new entries - Dr. Rubinoff
+    {doctor:'Dr. Rubinoff',  patient:'Ariadna Loayza', dateSent:'2026-03-01',dateReceived:'2026-03-09', description:'Flexi Partial Denture Upper',                                         invoice:'325',invoiceNum:'52650', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Millet Johnson', dateSent:'2026-03-03',dateReceived:'2026-03-10', description:'Locator overdenture with cast fram parts no incl.',                   invoice:'950',invoiceNum:'52722', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', dateSent:'2026-03-03',dateReceived:'',           description:'',                                                                    invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Zheng Ke Wu',    dateSent:'2026-03-15',dateReceived:'2026-03-19', description:'Full dentures upper/lower',                                           invoice:'900',invoiceNum:'53416', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Anita Johnson',  dateSent:'2026-03-17',dateReceived:'2026-03-24', description:'Cast metal partial denture upper/lower',                              invoice:'900',invoiceNum:'53553', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Anthony Lezaja', dateSent:'2026-03-17',dateReceived:'',           description:'',                                                                    invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', dateSent:'2026-03-17',dateReceived:'2026-03-20', description:'Wax up teeth',                                                        invoice:'0',  invoiceNum:'0',     lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', dateSent:'2026-03-31',dateReceived:'',           description:'',                                                                    invoice:'0',  invoiceNum:'',      lab:'Golden Cusp Dental Lab', labStatusOverride:'Sent Out',caseStatusOverride:'In Progress'},
+  ];
+  entries.forEach(e=>{
+    if (scripts.some(s=>s.patient===e.patient&&s.doctor===e.doctor&&s.dateSent===e.dateSent&&s.dateReceived===(e.dateReceived||''))) return;
+    scripts.push({id:uid(),patient:e.patient,doctor:e.doctor,lab:e.lab,dateWritten:e.dateSent,workType:'Other',labStatus:e.labStatusOverride||'Received',caseStatus:e.caseStatusOverride||'Completed',dateSent:e.dateSent,dateReceived:e.dateReceived||'',invoice:e.invoice,invoiceNum:e.invoiceNum,notes:e.description});
+  });
+  save();
+})();
+
+// ---- DUPLICATE TEST ----
+(function dupTest(){
+  const testId='dup-test-entry';
+  if (scripts.find(s=>s.id===testId)) return;
+  scripts.push({id:testId,patient:'Lenny Tobon',doctor:'Dr. Arzanipour',lab:'Golden Cusp Dental Lab',dateWritten:'2026-01-20',workType:'Other',labStatus:'Received',caseStatus:'Completed',dateSent:'2026-01-20',dateReceived:'2026-01-22',invoice:'145',invoiceNum:'101640',notes:'TEST DUPLICATE ENTRY'});
+  save();
+})();
+
+// ---- SCAN ----
+let scanImageBase64 = null;
+let scanResult = null;
+const API_KEY_STORAGE = 'smileservices_apikey';
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (key) localStorage.setItem(API_KEY_STORAGE, key);
+}
+
+function openScanModal() {
+  scanImageBase64 = null; scanResult = null;
+  document.getElementById('scanPreview').style.display = 'none';
+  document.getElementById('scanStatus').className = 'scan-status';
+  document.getElementById('scanResultBox').classList.remove('visible');
+  document.getElementById('scanFillBtn').style.display = 'none';
+  document.getElementById('scanBtn').style.display = 'none';
+  document.getElementById('scanFileInput').value = '';
+  const saved = localStorage.getItem(API_KEY_STORAGE);
+  if (saved) document.getElementById('apiKeyInput').value = saved;
+  document.getElementById('scanModal').classList.add('open');
+}
+
+function onDragOver(e) { e.preventDefault(); document.getElementById('scanDropArea').classList.add('dragover'); }
+function onDragLeave(e) { document.getElementById('scanDropArea').classList.remove('dragover'); }
+function onDrop(e) { e.preventDefault(); document.getElementById('scanDropArea').classList.remove('dragover'); const file=e.dataTransfer.files[0]; if(file) processImageFile(file); }
+function onFileSelected(e) { const file=e.target.files[0]; if(file) processImageFile(file); }
+
+function processImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    // Convert to JPEG via canvas to ensure clean format
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      // Scale down if too large (max 1600px)
+      const maxSize = 1600;
+      let w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else       { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      const jpeg = canvas.toDataURL('image/jpeg', 0.92);
+      scanImageBase64 = jpeg.split(',')[1];
+      const preview = document.getElementById('scanPreview');
+      preview.src = jpeg; preview.style.display = 'block';
+      document.getElementById('scanBtn').style.display = 'block';
+      document.getElementById('scanResultBox').classList.remove('visible');
+      document.getElementById('scanFillBtn').style.display = 'none';
+      document.getElementById('scanStatus').className = 'scan-status';
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function runScan() {
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey) { showScanStatus('Please enter your Anthropic API key above.', 'error'); return; }
+  if (!scanImageBase64) { showScanStatus('Please select an image first.', 'error'); return; }
+  showScanStatus('Reading handwriting...', 'scanning');
+  document.getElementById('scanBtn').disabled = true;
+
+  const prompt = `You are reading a Golden Cusp Dental Lab slip. Extract the following fields and return ONLY a valid JSON object with no extra text or markdown.
+
+Fields to extract:
+- Doctor name (written after "Doctor" — just the last name, e.g. "Arzanipour")
+- Patient full name (written after "Patient Mr./Ms.")
+- Date sent (written after "Date" — convert to YYYY-MM-DD format)
+- Due date (written after "Due Date" — convert to YYYY-MM-DD format)
+- Work type: look at the checked boxes and handwritten Rx section. Choose the closest from: Crown, Bridge, Denture, Partial Denture, Implant Crown, Veneer, Emax Crown, Zirconia, Inlay / Onlay, Flipper, Flexi Flipper, Night Guard, Retainer, Repair, Post Brux, Other
+- Tooth number(s): handwritten after the Rx symbol (e.g. "#5")
+- Shade: handwritten near "Shade"
+- Description/notes: any handwritten instructions in the notes box (e.g. "Leave out of occlusion", "Very light occlusion", photo instructions, etc.)
+
+Return this exact JSON:
+{"patientFirstName":"","patientLastName":"","doctor":"","dateSent":"YYYY-MM-DD or empty","dueDate":"YYYY-MM-DD or empty","workType":"","toothNumber":"","description":""}
+
+Leave fields as empty string if not visible or legible.`;
+
+  try {
+    showScanStatus('Connecting to API...', 'scanning');
+    let res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'x-api-key':apiKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+        body: JSON.stringify({
+          model: 'claude-opus-4-6', max_tokens: 500,
+          messages: [{ role:'user', content: [
+            { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:scanImageBase64 } },
+            { type:'text', text:prompt }
+          ]}]
+        })
+      });
+    } catch(fetchErr) {
+      showScanStatus('Network error: ' + fetchErr.message, 'error');
+      document.getElementById('scanBtn').disabled=false; return;
+    }
+
+    showScanStatus('Got response: ' + res.status, 'scanning');
+    let data;
+    try {
+      data = await res.json();
+    } catch(jsonErr) {
+      showScanStatus('Response parse error: ' + jsonErr.message, 'error');
+      document.getElementById('scanBtn').disabled=false; return;
+    }
+
+    if (!res.ok) { showScanStatus('API error: '+(data.error?.message||JSON.stringify(data)), 'error'); document.getElementById('scanBtn').disabled=false; return; }
+
+    showScanStatus('Parsing result...', 'scanning');
+    const text = data.content?.[0]?.text?.trim();
+    if (!text) { showScanStatus('Empty response from API. Content: ' + JSON.stringify(data.content), 'error'); document.getElementById('scanBtn').disabled=false; return; }
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) { showScanStatus('No JSON found. Got: ' + text.substring(0,150), 'error'); document.getElementById('scanBtn').disabled=false; return; }
+    scanResult = JSON.parse(jsonMatch[0]);
+    const rows = [
+      ['Patient', [scanResult.patientFirstName,scanResult.patientLastName].filter(Boolean).join(' ')],
+      ['Doctor', scanResult.doctor],
+      ['Date Sent', scanResult.dateSent],
+      ['Due Date', scanResult.dueDate],
+      ['Work Type', scanResult.workType],
+      ['Tooth #', scanResult.toothNumber],
+      ['Description', scanResult.description],
+    ].filter(([,v])=>v);
+    document.getElementById('scanResultRows').innerHTML = rows.map(([k,v])=>
+      `<div class="scan-result-row"><span class="scan-result-key">${k}</span><span class="scan-result-val">${v}</span></div>`
+    ).join('');
+    document.getElementById('scanResultBox').classList.add('visible');
+    document.getElementById('scanFillBtn').style.display = 'block';
+    document.getElementById('scanStatus').className = 'scan-status';
+    document.getElementById('scanBtn').disabled = false;
+  } catch(err) {
+    showScanStatus('Error: '+err.message, 'error');
+    document.getElementById('scanBtn').disabled = false;
+  }
+}
+
+function showScanStatus(msg, type) {
+  const el = document.getElementById('scanStatus');
+  el.textContent = msg; el.className = 'scan-status '+(type||'');
+}
+
+function fillFormFromScan() {
+  if (!scanResult) return;
+  closeModal('scanModal');
+  openAddModal();
+  setTimeout(() => {
+    if (scanResult.patientFirstName) document.getElementById('fFirstName').value  = scanResult.patientFirstName;
+    if (scanResult.patientLastName)  document.getElementById('fLastName').value   = scanResult.patientLastName;
+    if (scanResult.dateSent)         { document.getElementById('fDateWritten').value = scanResult.dateSent; document.getElementById('fDateSent').value = scanResult.dateSent; }
+    if (scanResult.workType)         document.getElementById('fWorkType').value   = scanResult.workType;
+    if (scanResult.invoiceAmount)    document.getElementById('fInvoice').value    = scanResult.invoiceAmount;
+    if (scanResult.invoiceNumber)    document.getElementById('fInvoiceNum').value = scanResult.invoiceNumber;
+    // Build rich notes from all extracted fields
+    const noteParts = [];
+    if (scanResult.toothNumber)  noteParts.push(`Tooth: ${scanResult.toothNumber}`);
+    if (scanResult.dueDate)      noteParts.push(`Due: ${scanResult.dueDate}`);
+    if (scanResult.description)  noteParts.push(scanResult.description);
+    if (noteParts.length)        document.getElementById('fNotes').value = noteParts.join(' | ');
+    if (scanResult.doctor) {
+      const match = doctors.find(d=>d.toLowerCase().includes(scanResult.doctor.toLowerCase()));
+      if (match) document.getElementById('fDoctor').value = match;
+    }
+    toast('Form filled from scanned script!');
+  }, 300);
+}
+
+renderAll();
+</script>
+</body>
+</html>
