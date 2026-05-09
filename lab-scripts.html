@@ -560,6 +560,21 @@ function showLoading(msg='Loading...') {
   document.getElementById('scriptList').innerHTML = `<div class="empty-state"><div class="empty-text">${msg}</div></div>`;
 }
 
+function parseSheetDate(val) {
+  if (!val || val === '') return '';
+  // Already in YYYY-MM-DD format
+  if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+  // Full date string like "Tue Apr 14 2026 00:00:00 GMT-0400..."
+  try {
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  } catch(e) { return ''; }
+}
+
 async function load() {
   showLoading('Connecting to Google Sheets...');
   try {
@@ -568,7 +583,13 @@ async function load() {
       document.getElementById('scriptList').innerHTML = `<div class="empty-state"><div class="empty-text">Connection error</div><div class="empty-sub">${data.error}</div></div>`;
       return;
     }
-    scripts = data.scripts || [];
+    // Normalize dates from Sheets
+    scripts = (data.scripts || []).map(s => ({
+      ...s,
+      dateWritten:  parseSheetDate(s.dateWritten),
+      dateSent:     parseSheetDate(s.dateSent),
+      dateReceived: parseSheetDate(s.dateReceived),
+    }));
     doctors = data.doctors || [];
     labs    = data.labs    || [];
     if (!doctors.length) doctors = ['Dr. Arzanipour', 'Dr. Rubinoff'];
