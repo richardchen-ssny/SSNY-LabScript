@@ -520,23 +520,40 @@ let isLoading=false;
 
 function uid(){ return Math.random().toString(36).substr(2,9); }
 
-// ── API ──
-async function api(params) {
-  const url = API_URL + '?' + new URLSearchParams(params).toString();
-  try {
-    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch(e) {
-    console.error('API error:', e);
-    return { error: e.message };
-  }
+// ── API via JSONP (required for Google Apps Script cross-origin) ──
+function api(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'cb_' + Math.random().toString(36).substr(2, 9);
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      reject(new Error('Request timed out'));
+    }, 15000);
+
+    window[cbName] = (data) => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      const script = document.getElementById(cbName);
+      if (script) script.remove();
+      resolve(data);
+    };
+
+    const allParams = { ...params, callback: cbName };
+    const url = API_URL + '?' + new URLSearchParams(allParams).toString();
+    const script = document.createElement('script');
+    script.id = cbName;
+    script.src = url;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      script.remove();
+      reject(new Error('Script load failed'));
+    };
+    document.head.appendChild(script);
+  });
 }
 
 async function apiPost(params, data) {
-  // Apps Script only reliably handles GET from browsers, so encode data as param
-  const allParams = { ...params, data: JSON.stringify(data) };
-  return api(allParams);
+  return api({ ...params, data: JSON.stringify(data) });
 }
 
 function showLoading(msg='Loading...') {
@@ -545,17 +562,21 @@ function showLoading(msg='Loading...') {
 
 async function load() {
   showLoading('Connecting to Google Sheets...');
-  const data = await api({ action: 'getAll' });
-  if (data.error) {
-    document.getElementById('scriptList').innerHTML = `<div class="empty-state"><div class="empty-text">Connection error</div><div class="empty-sub">${data.error}</div></div>`;
-    return;
+  try {
+    const data = await api({ action: 'getAll' });
+    if (data.error) {
+      document.getElementById('scriptList').innerHTML = `<div class="empty-state"><div class="empty-text">Connection error</div><div class="empty-sub">${data.error}</div></div>`;
+      return;
+    }
+    scripts = data.scripts || [];
+    doctors = data.doctors || [];
+    labs    = data.labs    || [];
+    if (!doctors.length) doctors = ['Dr. Arzanipour', 'Dr. Rubinoff'];
+    if (!labs.length)    labs    = ['Golden Cusp Dental Lab'];
+    renderAll();
+  } catch(e) {
+    document.getElementById('scriptList').innerHTML = `<div class="empty-state"><div class="empty-text">Failed to connect</div><div class="empty-sub">${e.message} — check your Apps Script deployment</div></div>`;
   }
-  scripts = data.scripts || [];
-  doctors = data.doctors || [];
-  labs    = data.labs    || [];
-  if (!doctors.length) doctors = ['Dr. Arzanipour', 'Dr. Rubinoff'];
-  if (!labs.length)    labs    = ['Golden Cusp Dental Lab'];
-  renderAll();
 }
 
 async function saveScript_api(entry, isNew) {
