@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smile Services of New York — Lab Scripts</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple-light: #7c6ec2;
+  --purple-mid: #3c3089;
+  --purple-dark: #2d2260;
+  --gold: #f4b942;
+  --gold-light: #ffd47a;
+  --bg: #f0eef8;
+  --card: #ffffff;
+  --text: #1a1535;
+  --text-muted: #6b639a;
+  --border: #e2dff4;
+  --green: #10b981;
+  --blue: #3b82f6;
+  --amber: #f59e0b;
+  --violet: #8b5cf6;
+  --danger: #ef4444;
+  --shadow: 0 1px 8px rgba(44,34,96,0.08);
+  --shadow-md: 0 4px 20px rgba(44,34,96,0.13);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── HEADER ── */
+header {
+  background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid) 70%, var(--purple-light));
+  color: white; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 16px rgba(44,34,96,0.3);
+}
+.header-top {
+  max-width: 960px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 8px; gap: 10px;
+}
+.header-logo { line-height: 1.2; }
+.header-logo-name { font-size: 1rem; font-weight: 900; white-space: nowrap; }
+.header-logo-sub { font-size: 0.58rem; font-weight: 700; opacity: 0.65; letter-spacing: 1.5px; text-transform: uppercase; }
+.header-btns { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.btn-gold {
+  background: var(--gold); color: var(--purple-dark); border: none; border-radius: 22px;
+  padding: 8px 16px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.82rem;
+  cursor: pointer; white-space: nowrap;
+}
+.btn-menu {
+  background: rgba(255,255,255,0.18); color: white;
+  border: 1.5px solid rgba(255,255,255,0.35); border-radius: 22px;
+  padding: 7px 13px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.78rem;
+  cursor: pointer; white-space: nowrap; position: relative;
+}
+.header-search-row {
+  max-width: 960px; margin: 0 auto; padding: 0 16px 12px;
+}
+.header-search {
+  width: 100%; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 24px; padding: 9px 16px; color: white; font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem; outline: none;
+}
+.header-search::placeholder { color: rgba(255,255,255,0.55); }
+
+/* Scan dropdown menu */
+.scan-menu {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: white; border-radius: 14px; box-shadow: var(--shadow-md);
+  overflow: hidden; z-index: 200; min-width: 160px; display: none;
+}
+.scan-menu.open { display: block; }
+.scan-menu-item {
+  display: block; width: 100%; padding: 12px 16px; text-align: left;
+  font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700;
+  color: var(--text); background: none; border: none; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+.scan-menu-item:last-child { border-bottom: none; }
+.scan-menu-item:hover { background: var(--bg); }
+
+/* ── FILTERS ── */
+.filters-wrap { background: white; border-bottom: 1px solid var(--border); }
+.filters-inner { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+
+/* Filter toggle bar */
+.filter-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; cursor: pointer;
+}
+.filter-toggle-label { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+.filter-toggle-right { display: flex; align-items: center; gap: 8px; }
+.filter-active-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+.filter-chip {
+  background: var(--purple-mid); color: white; border-radius: 20px;
+  padding: 2px 8px; font-size: 0.65rem; font-weight: 800;
+}
+.filter-toggle-arrow { font-size: 0.7rem; color: var(--text-muted); transition: transform 0.2s; }
+.filter-toggle-arrow.open { transform: rotate(180deg); }
+
+/* Expanded filter panel */
+.filter-panel { display: none; padding-bottom: 12px; }
+.filter-panel.open { display: block; }
+.filter-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.filter-row:last-child { margin-bottom: 0; }
+.filter-label { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; min-width: 34px; }
+.filter-group { display: flex; gap: 5px; flex-wrap: wrap; }
+.filter-btn {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px;
+  padding: 5px 12px; font-family: 'Nunito', sans-serif; font-size: 0.74rem; font-weight: 700;
+  color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+}
+.filter-btn.active { background: var(--purple-mid); border-color: var(--purple-mid); color: white; }
+.filter-select {
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px;
+  padding: 5px 10px; font-family: 'Nunito', sans-serif; font-size: 0.74rem; font-weight: 700;
+  color: var(--text-muted); outline: none; cursor: pointer;
+}
+.this-month-btn {
+  margin-left: auto; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 5px 12px; font-family: 'Nunito', sans-serif;
+  font-size: 0.74rem; font-weight: 700; color: var(--text-muted); cursor: pointer;
+}
+.this-month-btn:hover { border-color: var(--purple-light); color: var(--purple-mid); }
+
+/* ── BANNERS ── */
+.banner-wrap { max-width: 960px; margin: 12px auto 0; padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+
+.dup-alert {
+  background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 12px;
+  padding: 10px 14px; color: var(--danger); font-size: 0.8rem; font-weight: 700; display: none;
+}
+.dup-alert.visible { display: block; }
+
+.monthly-card {
+  background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+  border-radius: 14px; padding: 14px 16px; color: white; display: none;
+}
+.monthly-card.visible { display: block; }
+.monthly-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.monthly-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+.monthly-grand { font-size: 0.85rem; font-weight: 900; color: var(--gold); }
+.monthly-grid { display: flex; gap: 18px; flex-wrap: wrap; }
+.monthly-item { display: flex; flex-direction: column; }
+.monthly-doctor { font-size: 0.68rem; font-weight: 700; opacity: 0.7; }
+.monthly-amount { font-size: 1rem; font-weight: 900; color: var(--gold); }
+.monthly-count { font-size: 0.6rem; opacity: 0.55; }
+
+.quarterly-card {
+  background: white; border: 1.5px solid var(--border); border-radius: 14px;
+  padding: 12px 16px; display: none;
+}
+.quarterly-card.visible { display: block; }
+.quarterly-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; }
+.quarterly-grid { display: flex; gap: 14px; flex-wrap: wrap; }
+.quarterly-item { border-left: 3px solid var(--purple-light); padding-left: 10px; }
+.quarterly-label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); }
+.quarterly-amount { font-size: 0.95rem; font-weight: 900; color: var(--purple-mid); }
+
+/* ── MAIN ── */
+.main-content { max-width: 960px; margin: 10px auto 100px; padding: 0 14px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
+.section-title { font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.section-actions { display: flex; gap: 6px; }
+.manage-btn {
+  background: white; border: 1.5px solid var(--border); border-radius: 20px;
+  padding: 5px 12px; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700;
+  color: var(--text-muted); cursor: pointer;
+}
+
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-text { font-size: 1rem; font-weight: 800; }
+.empty-sub { font-size: 0.8rem; margin-top: 4px; }
+
+/* ── CARDS ── */
+.script-card {
+  background: white; border-radius: 16px; box-shadow: var(--shadow);
+  margin-bottom: 10px; overflow: hidden; border: 1.5px solid var(--border);
+}
+.script-card.duplicate { border-color: #fca5a5; background: #fff0f0; }
+
+.card-top { padding: 12px 14px 10px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.card-patient { font-size: 1rem; font-weight: 900; line-height: 1.2; }
+.card-meta { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-top: 3px; }
+.card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.card-tag { background: var(--bg); border: 1.5px solid var(--border); border-radius: 20px; padding: 2px 9px; font-size: 0.67rem; font-weight: 700; color: var(--purple-mid); }
+.card-tag.lab { color: #0369a1; background: #e0f2fe; border-color: #bae6fd; }
+.card-badges { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; flex-shrink: 0; }
+.badge { border-radius: 20px; padding: 4px 10px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+.badge-sent { background: #dbeafe; color: var(--blue); }
+.badge-received { background: #d1fae5; color: var(--green); }
+.badge-progress { background: #fef3c7; color: var(--amber); }
+.badge-completed { background: #ede9fe; color: var(--violet); }
+.badge-dup { background: #fef2f2; color: var(--danger); }
+
+.card-notes { padding: 6px 14px; font-size: 0.75rem; color: var(--text-muted); font-style: italic; border-top: 1px dashed var(--border); }
+
+.card-info { padding: 8px 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.card-dates { display: flex; gap: 14px; }
+.card-date { display: flex; flex-direction: column; }
+.date-lbl { font-size: 0.58rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.date-val { font-size: 0.78rem; font-weight: 700; }
+.invoice-block { text-align: right; }
+.invoice-amt { font-size: 0.95rem; font-weight: 900; color: var(--purple-mid); }
+.invoice-amt.none { color: #ccc; font-style: italic; font-size: 0.76rem; font-weight: 600; }
+.invoice-num { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); }
+
+.card-actions { padding: 8px 14px 10px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; }
+.quick-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+.qbtn { border: none; border-radius: 8px; padding: 5px 11px; font-family: 'Nunito', sans-serif; font-size: 0.71rem; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.qbtn-received  { background: #d1fae5; color: #059669; }
+.qbtn-completed { background: #ede9fe; color: #7c3aed; }
+.qbtn-progress  { background: #fef3c7; color: #d97706; }
+.card-edit-btns { display: flex; gap: 5px; }
+.ebtn { background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 5px 11px; font-family: 'Nunito', sans-serif; font-size: 0.71rem; font-weight: 700; color: var(--text-muted); cursor: pointer; }
+.ebtn.del:hover { border-color: #fca5a5; color: var(--danger); }
+
+/* ── MODAL ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(20,10,60,0.5); z-index: 300; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: white; border-radius: 24px 24px 0 0; width: 100%; max-width: 560px; padding: 18px 18px 40px; max-height: 93vh; overflow-y: auto; animation: slideUp 0.22s ease; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 14px; }
+.modal-title { font-size: 1.05rem; font-weight: 900; margin-bottom: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 9px; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 3px; }
+.form-group label { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.form-group input, .form-group select, .form-group textarea {
+  border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 11px;
+  font-family: 'Nunito', sans-serif; font-size: 16px; color: var(--text); outline: none; background: white;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--purple-light); }
+.form-group textarea { resize: vertical; min-height: 65px; }
+.btn-primary { background: var(--purple-mid); color: white; border: none; border-radius: 12px; padding: 13px; width: 100%; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.95rem; cursor: pointer; margin-top: 8px; }
+.btn-cancel { background: var(--bg); color: var(--text-muted); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; width: 100%; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; margin-top: 6px; }
+
+/* Manage list */
+.list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-weight: 700; }
+.list-item:last-child { border-bottom: none; }
+.remove-btn { background: none; border: 1.5px solid #fca5a5; border-radius: 8px; padding: 4px 10px; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--danger); cursor: pointer; }
+.add-row { display: flex; gap: 8px; margin-top: 12px; }
+.add-input { flex: 1; border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: 'Nunito', sans-serif; font-size: 16px; outline: none; }
+.add-input:focus { border-color: var(--purple-light); }
+.add-btn { background: var(--purple-mid); color: white; border: none; border-radius: 10px; padding: 10px 16px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.85rem; cursor: pointer; }
+
+/* Scan */
+.scan-drop {
+  border: 2px dashed var(--border); border-radius: 14px; padding: 26px 16px;
+  text-align: center; cursor: pointer; background: var(--bg); margin-bottom: 12px;
+}
+.scan-drop-title { font-size: 0.9rem; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+.scan-drop-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+.scan-preview { width: 100%; max-height: 200px; object-fit: contain; border-radius: 10px; margin-bottom: 10px; display: none; }
+.scan-status { font-size: 0.8rem; font-weight: 700; text-align: center; padding: 6px; display: none; }
+.scan-status.scanning { display: block; color: var(--purple-mid); }
+.scan-status.error { display: block; color: var(--danger); }
+.scan-result-box { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 11px 13px; margin-bottom: 10px; display: none; }
+.scan-result-box.visible { display: block; }
+.scan-result-title { font-size: 0.67rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 7px; }
+.scan-result-row { display: flex; justify-content: space-between; font-size: 0.8rem; padding: 3px 0; border-bottom: 1px solid var(--border); }
+.scan-result-row:last-child { border-bottom: none; }
+.scan-result-key { font-weight: 700; color: var(--text-muted); }
+.scan-result-val { font-weight: 800; color: var(--text); text-align: right; max-width: 60%; }
+.api-key-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.api-key-row label { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+.api-key-input { border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 11px; font-family: 'Nunito', sans-serif; font-size: 16px; color: var(--text); outline: none; width: 100%; }
+.api-key-hint { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
+
+/* Match confirm */
+.match-card { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+.no-match { background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 12px; padding: 12px 14px; color: var(--danger); font-size: 0.82rem; font-weight: 700; margin-bottom: 12px; display: none; }
+
+/* Toast */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--purple-dark); color: white; padding: 10px 22px; border-radius: 24px; font-weight: 700; font-size: 0.82rem; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <div class="header-logo">
+      <div class="header-logo-name">Smile Services of New York</div>
+      <div class="header-logo-sub">Lab Script Tracker</div>
+    </div>
+    <div class="header-btns">
+      <div style="position:relative">
+        <button class="btn-menu" onclick="toggleScanMenu()">Scan</button>
+        <div class="scan-menu" id="scanMenu">
+          <button class="scan-menu-item" onclick="openScanModal();closeScanMenu()">Scan Lab Script</button>
+          <button class="scan-menu-item" onclick="openInvoiceScanModal();closeScanMenu()">Scan Invoice</button>
+        </div>
+      </div>
+      <button class="btn-gold" onclick="openAddModal()">+ New Script</button>
+    </div>
+  </div>
+  <div class="header-search-row">
+    <input class="header-search" type="text" placeholder="Search patient name..." id="searchInput" oninput="renderAll()">
+  </div>
+</header>
+
+<!-- FILTERS (collapsible) -->
+<div class="filters-wrap">
+  <div class="filters-inner">
+    <div class="filter-toggle-row" onclick="toggleFilters()">
+      <span class="filter-toggle-label">Filters &amp; Sort</span>
+      <div class="filter-toggle-right">
+        <div class="filter-active-chips" id="activeChips"></div>
+        <span class="filter-toggle-arrow" id="filterArrow">▼</span>
+      </div>
+    </div>
+    <div class="filter-panel" id="filterPanel">
+      <div class="filter-row">
+        <span class="filter-label">Lab</span>
+        <div class="filter-group" id="labFilters">
+          <button class="filter-btn active" onclick="setFilter('lab','all',this)">All</button>
+          <button class="filter-btn" onclick="setFilter('lab','Sent Out',this)">Sent Out</button>
+          <button class="filter-btn" onclick="setFilter('lab','Received',this)">Received</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Case</span>
+        <div class="filter-group" id="caseFilters">
+          <button class="filter-btn active" onclick="setFilter('case','all',this)">All</button>
+          <button class="filter-btn" onclick="setFilter('case','In Progress',this)">In Progress</button>
+          <button class="filter-btn" onclick="setFilter('case','Completed',this)">Completed</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Sort</span>
+        <div class="filter-group" id="sortFilters">
+          <button class="filter-btn active" onclick="setFilter('sort','dateWritten',this)">Date Written</button>
+          <button class="filter-btn" onclick="setFilter('sort','dateReceived',this)">Date Received</button>
+          <button class="filter-btn" onclick="setFilter('sort','lastName',this)">Last Name</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Doctor</span>
+        <select class="filter-select" id="doctorFilter" onchange="renderAll()"><option value="all">All Doctors</option></select>
+        <select class="filter-select" id="monthFilter" onchange="renderAll()"><option value="all">All Months</option></select>
+        <button class="this-month-btn" onclick="setThisMonth()">This Month</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BANNERS -->
+<div class="banner-wrap">
+  <div class="dup-alert" id="dupAlert"><span id="dupText"></span></div>
+  <div class="monthly-card" id="monthlyCard">
+    <div class="monthly-header">
+      <div class="monthly-title" id="monthlyTitle">Monthly Totals</div>
+      <div class="monthly-grand" id="monthlyGrand"></div>
+    </div>
+    <div class="monthly-grid" id="monthlyGrid"></div>
+  </div>
+  <div class="quarterly-card" id="quarterlyCard">
+    <div class="quarterly-title" id="quarterlyTitle">Quarterly Totals</div>
+    <div class="quarterly-grid" id="quarterlyGrid"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-content">
+  <div class="section-header">
+    <span class="section-title" id="listTitle">All Lab Scripts</span>
+    <div class="section-actions">
+      <button class="manage-btn" onclick="openLabsModal()">Labs</button>
+      <button class="manage-btn" onclick="openDoctorsModal()">Doctors</button>
+    </div>
+  </div>
+  <div id="scriptList"></div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="scriptModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">New Lab Script</div>
+    <input type="hidden" id="editId">
+    <div class="form-row">
+      <div class="form-group"><label>First Name</label><input type="text" id="fFirstName" placeholder="First name"></div>
+      <div class="form-group"><label>Last Name</label><input type="text" id="fLastName" placeholder="Last name"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Doctor</label><select id="fDoctor"></select></div>
+      <div class="form-group"><label>Lab Company</label><select id="fLab"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date Written</label><input type="date" id="fDateWritten"></div>
+      <div class="form-group"><label>Work Type</label>
+        <select id="fWorkType">
+          <option value="">Select...</option>
+          <option>Crown</option><option>Bridge</option><option>Denture</option>
+          <option>Partial Denture</option><option>Implant Crown</option><option>Veneer</option>
+          <option>Emax Crown</option><option>Zirconia</option><option>Inlay / Onlay</option>
+          <option>Flipper</option><option>Flexi Flipper</option><option>Night Guard</option>
+          <option>Retainer</option><option>Repair</option><option>Post Brux</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Lab Status</label><select id="fLabStatus"><option>Sent Out</option><option>Received</option></select></div>
+      <div class="form-group"><label>Case Status</label><select id="fCaseStatus"><option>In Progress</option><option>Completed</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Date Sent</label><input type="date" id="fDateSent"></div>
+      <div class="form-group"><label>Date Received</label><input type="date" id="fDateReceived"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Invoice Amount ($)</label><input type="number" id="fInvoice" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="form-group"><label>Invoice Number</label><input type="text" id="fInvoiceNum" placeholder="e.g. 54103"></div>
+    </div>
+    <div class="form-row full">
+      <div class="form-group"><label>Notes / Description</label><textarea id="fNotes" placeholder="Work description, tooth #, instructions..."></textarea></div>
+    </div>
+    <button class="btn-primary" onclick="saveScript()">Save</button>
+    <button class="btn-cancel" onclick="closeModal('scriptModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- DOCTORS MODAL -->
+<div class="modal-overlay" id="doctorsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Manage Doctors</div>
+    <div id="doctorListEl"></div>
+    <div class="add-row"><input class="add-input" type="text" id="newDoctorInput" placeholder="Dr. Last Name"><button class="add-btn" onclick="addDoctor()">Add</button></div>
+    <button class="btn-cancel" style="margin-top:14px" onclick="closeModal('doctorsModal')">Done</button>
+  </div>
+</div>
+
+<!-- LABS MODAL -->
+<div class="modal-overlay" id="labsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Manage Lab Companies</div>
+    <div id="labListEl"></div>
+    <div class="add-row"><input class="add-input" type="text" id="newLabInput" placeholder="Lab name"><button class="add-btn" onclick="addLab()">Add</button></div>
+    <button class="btn-cancel" style="margin-top:14px" onclick="closeModal('labsModal')">Done</button>
+  </div>
+</div>
+
+<!-- SCAN SCRIPT MODAL -->
+<div class="modal-overlay" id="scanModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Scan Lab Script</div>
+    <div class="api-key-row">
+      <label>Anthropic API Key</label>
+      <input class="api-key-input" type="password" id="apiKeyInput" placeholder="sk-ant-..." oninput="saveApiKey()">
+      <span class="api-key-hint">Saved locally. Never shared.</span>
+    </div>
+    <div class="scan-drop" id="scanDropArea" onclick="document.getElementById('scanFileInput').click()">
+      <div class="scan-drop-title">Tap to take photo or choose image</div>
+      <div class="scan-drop-sub">Photo of the handwritten lab script slip</div>
+      <input type="file" id="scanFileInput" accept="image/*" capture="environment" style="display:none" onchange="onFileSelected(event)">
+    </div>
+    <img id="scanPreview" class="scan-preview">
+    <div class="scan-status" id="scanStatus"></div>
+    <div class="scan-result-box" id="scanResultBox"><div class="scan-result-title">Extracted from script</div><div id="scanResultRows"></div></div>
+    <button class="btn-primary" id="scanBtn" style="display:none;background:var(--purple-light)" onclick="runScan()">Scan Now</button>
+    <button class="btn-primary" id="scanFillBtn" style="display:none" onclick="fillFormFromScan()">Fill Form with This Data</button>
+    <button class="btn-cancel" onclick="closeModal('scanModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- SCAN INVOICE MODAL -->
+<div class="modal-overlay" id="invoiceScanModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Scan Invoice</div>
+    <div class="api-key-row">
+      <label>Anthropic API Key</label>
+      <input class="api-key-input" type="password" id="invApiKeyInput" placeholder="sk-ant-..." oninput="saveInvApiKey()">
+      <span class="api-key-hint">Saved locally. Never shared.</span>
+    </div>
+    <div class="scan-drop" onclick="document.getElementById('invFileInput').click()">
+      <div class="scan-drop-title">Tap to take photo or choose image</div>
+      <div class="scan-drop-sub">Photo of the lab invoice</div>
+      <input type="file" id="invFileInput" accept="image/*" capture="environment" style="display:none" onchange="onInvFileSelected(event)">
+    </div>
+    <img id="invPreview" class="scan-preview">
+    <div class="scan-status" id="invStatus"></div>
+    <div class="scan-result-box" id="invResultBox"><div class="scan-result-title">Extracted from invoice</div><div id="invResultRows"></div></div>
+    <button class="btn-primary" id="invScanBtn" style="display:none;background:var(--purple-light)" onclick="runInvoiceScan()">Scan Now</button>
+    <button class="btn-primary" id="invMatchBtn" style="display:none" onclick="findInvoiceMatch()">Find Matching Script</button>
+    <button class="btn-cancel" onclick="closeModal('invoiceScanModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- INVOICE MATCH MODAL -->
+<div class="modal-overlay" id="invoiceMatchModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Confirm Invoice Match</div>
+    <p style="font-size:0.8rem;color:var(--text-muted);font-weight:600;margin-bottom:12px">Review the match below and confirm to update the script.</p>
+    <div class="scan-result-box visible"><div class="scan-result-title">Invoice Details</div><div id="matchInvoiceRows"></div></div>
+    <div style="font-size:0.67rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 6px">Matched Script</div>
+    <div class="match-card" id="matchScriptCard"></div>
+    <div class="no-match" id="noMatchMsg"></div>
+    <button class="btn-primary" id="confirmMatchBtn" onclick="confirmInvoiceMatch()">Confirm &amp; Update Script</button>
+    <button class="btn-cancel" style="margin-top:6px" onclick="closeModal('invoiceMatchModal')">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SK = 'smileservices_labscripts_v1';
+const DK = 'smileservices_doctors_v1';
+const LK = 'smileservices_labs_v1';
+const AK = 'smileservices_apikey';
+
+let scripts=[], doctors=[], labs=[];
+let activeLabF='all', activeCaseF='all', activeSort='dateWritten';
+let filtersOpen=false;
+
+function uid(){ return Math.random().toString(36).substr(2,9); }
+
+function load(){
+  try { scripts=JSON.parse(localStorage.getItem(SK)||'[]'); } catch(e){ scripts=[]; }
+  try { doctors=JSON.parse(localStorage.getItem(DK)||'[]'); } catch(e){ doctors=[]; }
+  try { labs=JSON.parse(localStorage.getItem(LK)||'[]'); } catch(e){ labs=[]; }
+  if(!doctors.length) doctors=['Dr. Arzanipour','Dr. Rubinoff'];
+  if(!labs.length)    labs=['Golden Cusp Dental Lab'];
+}
+
+function save(){
+  try {
+    localStorage.setItem(SK,JSON.stringify(scripts));
+    localStorage.setItem(DK,JSON.stringify(doctors));
+    localStorage.setItem(LK,JSON.stringify(labs));
+  } catch(e){ console.error('Save failed',e); }
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ── FILTER TOGGLE ──
+function toggleFilters(){
+  filtersOpen=!filtersOpen;
+  document.getElementById('filterPanel').classList.toggle('open',filtersOpen);
+  document.getElementById('filterArrow').classList.toggle('open',filtersOpen);
+}
+
+function updateActiveChips(){
+  const chips=[];
+  if(activeLabF!=='all') chips.push(activeLabF);
+  if(activeCaseF!=='all') chips.push(activeCaseF);
+  const df=document.getElementById('doctorFilter');
+  if(df&&df.value!=='all') chips.push(df.value.replace('Dr.','Dr'));
+  const mf=document.getElementById('monthFilter');
+  if(mf&&mf.value!=='all'){ const [y,mo]=mf.value.split('-'); chips.push(new Date(y,mo-1).toLocaleString('default',{month:'short',year:'numeric'})); }
+  document.getElementById('activeChips').innerHTML=chips.map(c=>`<span class="filter-chip">${c}</span>`).join('');
+}
+
+// ── FILTERS ──
+function setFilter(type,val,btn){
+  if(type==='lab')  { activeLabF=val;  document.querySelectorAll('#labFilters  .filter-btn').forEach(b=>b.classList.remove('active')); }
+  if(type==='case') { activeCaseF=val; document.querySelectorAll('#caseFilters .filter-btn').forEach(b=>b.classList.remove('active')); }
+  if(type==='sort') { activeSort=val;  document.querySelectorAll('#sortFilters .filter-btn').forEach(b=>b.classList.remove('active')); }
+  btn.classList.add('active');
+  renderAll();
+}
+
+function setThisMonth(){
+  const now=new Date();
+  const val=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const mf=document.getElementById('monthFilter');
+  if(mf) mf.value=val;
+  renderAll();
+}
+
+function populateFilters(){
+  const df=document.getElementById('doctorFilter');
+  const cur=df?df.value:'all';
+  if(df){ df.innerHTML='<option value="all">All Doctors</option>'; doctors.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;if(d===cur)o.selected=true;df.appendChild(o);}); }
+  const mf=document.getElementById('monthFilter');
+  const curM=mf?mf.value:'all';
+  const months=new Set();
+  scripts.forEach(s=>{ if(s.dateWritten){const d=new Date(s.dateWritten);months.add(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);} });
+  if(mf){ mf.innerHTML='<option value="all">All Months</option>'; [...months].sort().reverse().forEach(m=>{const [y,mo]=m.split('-');const label=new Date(y,mo-1).toLocaleString('default',{month:'long',year:'numeric'});const o=document.createElement('option');o.value=m;o.textContent=label;if(m===curM)o.selected=true;mf.appendChild(o);}); }
+}
+
+function getFiltered(){
+  const search=(document.getElementById('searchInput')?.value||'').toLowerCase();
+  const docF=document.getElementById('doctorFilter')?.value||'all';
+  const monF=document.getElementById('monthFilter')?.value||'all';
+  return scripts.filter(s=>{
+    if(activeLabF!=='all'&&s.labStatus!==activeLabF) return false;
+    if(activeCaseF!=='all'&&s.caseStatus!==activeCaseF) return false;
+    if(docF!=='all'&&s.doctor!==docF) return false;
+    if(monF!=='all'&&s.dateWritten){const d=new Date(s.dateWritten);const m=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;if(m!==monF)return false;}
+    if(search){const full=(s.patient||'').toLowerCase();const last=full.trim().split(' ').pop();if(!full.includes(search)&&!last.includes(search))return false;}
+    return true;
+  });
+}
+
+function getSorted(arr){
+  return [...arr].sort((a,b)=>{
+    if(activeSort==='lastName'){const la=(a.patient||'').trim().split(' ').pop().toLowerCase();const lb=(b.patient||'').trim().split(' ').pop().toLowerCase();return la.localeCompare(lb);}
+    if(activeSort==='dateReceived') return new Date(b.dateReceived||0)-new Date(a.dateReceived||0);
+    return new Date(b.dateWritten||0)-new Date(a.dateWritten||0);
+  });
+}
+
+// ── DUPLICATES ──
+function findDuplicates(){
+  const dups=new Set(),seen={};
+  scripts.forEach(s=>{
+    if(s.invoice&&parseFloat(s.invoice)>0&&s.invoiceNum&&s.invoiceNum.trim()){
+      const key=`${s.doctor}_${(s.patient||'').toLowerCase().trim()}_${parseFloat(s.invoice).toFixed(2)}_${s.invoiceNum.trim()}`;
+      if(seen[key]){dups.add(s.id);dups.add(seen[key]);}else seen[key]=s.id;
+    }
+  });
+  return dups;
+}
+
+// ── BANNERS ──
+function updateBanners(){
+  const monF=document.getElementById('monthFilter')?.value||'all';
+  const docF=document.getElementById('doctorFilter')?.value||'all';
+  const mc=document.getElementById('monthlyCard');
+  const qc=document.getElementById('quarterlyCard');
+
+  if(monF!=='all'){
+    mc.classList.add('visible'); qc.classList.remove('visible');
+    const [y,mo]=monF.split('-');
+    document.getElementById('monthlyTitle').textContent=`Totals — ${new Date(y,mo-1).toLocaleString('default',{month:'long',year:'numeric'})}`;
+    const totals={};let grand=0;
+    doctors.forEach(d=>totals[d]={amt:0,count:0});
+    scripts.forEach(s=>{
+      if(!s.dateWritten)return;
+      const d=new Date(s.dateWritten);
+      const m=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      if(m===monF){const amt=parseFloat(s.invoice)||0;if(!totals[s.doctor])totals[s.doctor]={amt:0,count:0};totals[s.doctor].amt+=amt;totals[s.doctor].count++;grand+=amt;}
+    });
+    document.getElementById('monthlyGrand').textContent=`Total: $${grand.toFixed(2)}`;
+    const grid=document.getElementById('monthlyGrid');
+    grid.innerHTML='';let any=false;
+    Object.entries(totals).forEach(([doc,{amt,count}])=>{if(count>0){any=true;grid.innerHTML+=`<div class="monthly-item"><span class="monthly-doctor">${doc}</span><span class="monthly-amount">$${amt.toFixed(2)}</span><span class="monthly-count">${count} case${count!==1?'s':''}</span></div>`;}});
+    if(!any) grid.innerHTML='<div style="color:rgba(255,255,255,0.6);font-size:0.8rem">No billed scripts this month.</div>';
+  } else {
+    mc.classList.remove('visible');
+    const quarters={};
+    scripts.forEach(s=>{
+      if(!s.dateWritten)return;
+      if(docF!=='all'&&s.doctor!==docF)return;
+      const d=new Date(s.dateWritten);
+      const q=`Q${Math.ceil((d.getMonth()+1)/3)} ${d.getFullYear()}`;
+      if(!quarters[q])quarters[q]=0;
+      quarters[q]+=parseFloat(s.invoice)||0;
+    });
+    if(Object.keys(quarters).length){
+      qc.classList.add('visible');
+      document.getElementById('quarterlyTitle').textContent=docF!=='all'?`Quarterly Totals — ${docF}`:'Quarterly Totals — All Doctors';
+      document.getElementById('quarterlyGrid').innerHTML=Object.entries(quarters).sort().map(([q,amt])=>`<div class="quarterly-item"><span class="quarterly-label">${q}</span><span class="quarterly-amount">$${amt.toFixed(2)}</span></div>`).join('');
+    } else qc.classList.remove('visible');
+  }
+}
+
+// ── RENDER ──
+function fmtDate(d){
+  if(!d)return'—';
+  const dt=new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function renderAll(){
+  populateFilters();
+  updateActiveChips();
+  const filtered=getFiltered();
+  const dups=findDuplicates();
+  updateBanners();
+
+  const da=document.getElementById('dupAlert');
+  const dupItems=filtered.filter(s=>dups.has(s.id));
+  if(dupItems.length){da.classList.add('visible');document.getElementById('dupText').textContent=`${dupItems.length} possible duplicate invoice${dupItems.length>1?'s':''} — same doctor, patient & invoice number.`;}
+  else da.classList.remove('visible');
+
+  const list=document.getElementById('scriptList');
+  if(!filtered.length){list.innerHTML=`<div class="empty-state"><div class="empty-text">No lab scripts found</div><div class="empty-sub">Add a new script or adjust your filters</div></div>`;return;}
+
+  const labC={'Sent Out':'badge-sent','Received':'badge-received'};
+  const caseC={'In Progress':'badge-progress','Completed':'badge-completed'};
+
+  list.innerHTML=getSorted(filtered).map(s=>{
+    const isDup=dups.has(s.id);
+    const tags=[];
+    if(s.workType) tags.push(`<span class="card-tag">${s.workType}</span>`);
+    if(s.lab)      tags.push(`<span class="card-tag lab">${s.lab}</span>`);
+    const inv=s.invoice&&parseFloat(s.invoice)>0
+      ?`<div class="invoice-block"><div class="invoice-amt">$${parseFloat(s.invoice).toFixed(2)}</div>${s.invoiceNum?`<div class="invoice-num">#${s.invoiceNum}</div>`:''}</div>`
+      :`<div class="invoice-block"><span class="invoice-amt none">Unbilled</span></div>`;
+    const sentD=s.dateSent?`<div class="card-date"><span class="date-lbl">Sent</span><span class="date-val">${fmtDate(s.dateSent)}</span></div>`:'';
+    const recD=s.dateReceived?`<div class="card-date"><span class="date-lbl">Received</span><span class="date-val">${fmtDate(s.dateReceived)}</span></div>`:'';
+    const notes=s.notes?`<div class="card-notes">${s.notes}</div>`:'';
+    const dupBadge=isDup?`<span class="badge badge-dup">Duplicate?</span>`:'';
+    const qbtns=[];
+    if(s.labStatus!=='Received')    qbtns.push(`<button class="qbtn qbtn-received"  onclick="quickUpdate('${s.id}','labStatus','Received')">Mark Received</button>`);
+    if(s.caseStatus!=='Completed')  qbtns.push(`<button class="qbtn qbtn-completed" onclick="quickUpdate('${s.id}','caseStatus','Completed')">Mark Completed</button>`);
+    if(s.caseStatus!=='In Progress')qbtns.push(`<button class="qbtn qbtn-progress"  onclick="quickUpdate('${s.id}','caseStatus','In Progress')">In Progress</button>`);
+    return `
+    <div class="script-card${isDup?' duplicate':''}">
+      <div class="card-top">
+        <div>
+          <div class="card-patient">${s.patient}</div>
+          <div class="card-meta">${s.doctor} · ${fmtDate(s.dateWritten)}</div>
+          ${tags.length?`<div class="card-tags">${tags.join('')}</div>`:''}
+        </div>
+        <div class="card-badges">
+          <span class="badge ${labC[s.labStatus]||''}">${s.labStatus||'Sent Out'}</span>
+          <span class="badge ${caseC[s.caseStatus]||''}">${s.caseStatus||'In Progress'}</span>
+          ${dupBadge}
+        </div>
+      </div>
+      ${notes}
+      <div class="card-info">
+        <div class="card-dates">${sentD}${recD}</div>
+        ${inv}
+      </div>
+      <div class="card-actions">
+        <div class="quick-btns">${qbtns.join('')}</div>
+        <div class="card-edit-btns">
+          <button class="ebtn" onclick="printScript('${s.id}')">Print</button>
+          <button class="ebtn" onclick="openEditModal('${s.id}')">Edit</button>
+          <button class="ebtn del" onclick="deleteScript('${s.id}')">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── QUICK UPDATE ──
+function quickUpdate(id,field,value){
+  const s=scripts.find(x=>x.id===id);if(!s)return;
+  s[field]=value;
+  if(field==='labStatus'&&value==='Received'&&!s.dateReceived) s.dateReceived=new Date().toISOString().split('T')[0];
+  save();renderAll();toast('Updated to '+value);
+}
+
+function deleteScript(id){ scripts=scripts.filter(s=>s.id!==id);save();renderAll();toast('Script deleted.'); }
+
+// ── MODALS ──
+function populateDoctorSelect(sel){const el=document.getElementById('fDoctor');el.innerHTML='';doctors.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;if(d===sel)o.selected=true;el.appendChild(o);});}
+function populateLabSelect(sel){const el=document.getElementById('fLab');el.innerHTML='<option value="">Select lab...</option>';labs.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l;if(l===sel)o.selected=true;el.appendChild(o);});}
+
+function openAddModal(){
+  document.getElementById('modalTitle').textContent='New Lab Script';
+  document.getElementById('editId').value='';
+  document.getElementById('fFirstName').value='';
+  document.getElementById('fLastName').value='';
+  document.getElementById('fDateWritten').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fDateSent').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fDateReceived').value='';
+  document.getElementById('fWorkType').value='';
+  document.getElementById('fLabStatus').value='Sent Out';
+  document.getElementById('fCaseStatus').value='In Progress';
+  document.getElementById('fInvoice').value='';
+  document.getElementById('fInvoiceNum').value='';
+  document.getElementById('fNotes').value='';
+  populateDoctorSelect('');populateLabSelect('');
+  document.getElementById('scriptModal').classList.add('open');
+}
+
+function openEditModal(id){
+  const s=scripts.find(x=>x.id===id);if(!s)return;
+  document.getElementById('modalTitle').textContent='Edit Lab Script';
+  document.getElementById('editId').value=id;
+  const parts=(s.patient||'').trim().split(' ');
+  document.getElementById('fFirstName').value=parts.length>1?parts.slice(0,-1).join(' '):parts[0]||'';
+  document.getElementById('fLastName').value=parts.length>1?parts[parts.length-1]:'';
+  document.getElementById('fDateWritten').value=s.dateWritten||'';
+  document.getElementById('fWorkType').value=s.workType||'';
+  document.getElementById('fLabStatus').value=s.labStatus||'Sent Out';
+  document.getElementById('fCaseStatus').value=s.caseStatus||'In Progress';
+  document.getElementById('fDateSent').value=s.dateSent||'';
+  document.getElementById('fDateReceived').value=s.dateReceived||'';
+  document.getElementById('fInvoice').value=s.invoice||'';
+  document.getElementById('fInvoiceNum').value=s.invoiceNum||'';
+  document.getElementById('fNotes').value=s.notes||'';
+  populateDoctorSelect(s.doctor);populateLabSelect(s.lab||'');
+  document.getElementById('scriptModal').classList.add('open');
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function saveScript(){
+  const first=document.getElementById('fFirstName').value.trim();
+  const last=document.getElementById('fLastName').value.trim();
+  if(!first&&!last){alert('Patient name is required.');return;}
+  const patient=[first,last].filter(Boolean).join(' ');
+  const id=document.getElementById('editId').value||uid();
+  const existing=scripts.find(s=>s.id===id);
+  const entry={id,patient,
+    doctor:document.getElementById('fDoctor').value,
+    lab:document.getElementById('fLab').value,
+    dateWritten:document.getElementById('fDateWritten').value,
+    workType:document.getElementById('fWorkType').value,
+    labStatus:document.getElementById('fLabStatus').value,
+    caseStatus:document.getElementById('fCaseStatus').value,
+    dateSent:document.getElementById('fDateSent').value,
+    dateReceived:document.getElementById('fDateReceived').value,
+    invoice:document.getElementById('fInvoice').value,
+    invoiceNum:document.getElementById('fInvoiceNum').value.trim(),
+    notes:document.getElementById('fNotes').value.trim(),
+  };
+  if(existing){scripts[scripts.indexOf(existing)]=entry;toast('Script updated!');}
+  else{scripts.push(entry);toast('Script added!');}
+  save();closeModal('scriptModal');renderAll();
+}
+
+// ── DOCTORS ──
+function openDoctorsModal(){renderDoctorList();document.getElementById('doctorsModal').classList.add('open');}
+function renderDoctorList(){document.getElementById('doctorListEl').innerHTML=doctors.map(d=>`<div class="list-item"><span>${d}</span><button class="remove-btn" data-name="${d}" onclick="removeDoctor(this)">Remove</button></div>`).join('');}
+function addDoctor(){const v=document.getElementById('newDoctorInput').value.trim();if(!v||doctors.includes(v))return;doctors.push(v);document.getElementById('newDoctorInput').value='';save();renderDoctorList();toast(v+' added!');}
+function removeDoctor(btn){doctors=doctors.filter(d=>d!==btn.getAttribute('data-name'));save();renderDoctorList();toast('Doctor removed.');}
+
+// ── LABS ──
+function openLabsModal(){renderLabList();document.getElementById('labsModal').classList.add('open');}
+function renderLabList(){document.getElementById('labListEl').innerHTML=labs.map(l=>`<div class="list-item"><span>${l}</span><button class="remove-btn" data-name="${l}" onclick="removeLab(this)">Remove</button></div>`).join('');}
+function addLab(){const v=document.getElementById('newLabInput').value.trim();if(!v||labs.includes(v))return;labs.push(v);document.getElementById('newLabInput').value='';save();renderLabList();toast(v+' added!');}
+function removeLab(btn){labs=labs.filter(l=>l!==btn.getAttribute('data-name'));save();renderLabList();toast('Lab removed.');}
+
+// ── SCAN MENU ──
+function toggleScanMenu(){document.getElementById('scanMenu').classList.toggle('open');}
+function closeScanMenu(){document.getElementById('scanMenu').classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.btn-menu')&&!e.target.closest('.scan-menu'))closeScanMenu();});
+
+// ── IMAGE PROCESSING ──
+function processImage(file, cb){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=1600;let w=img.width,h=img.height;
+      if(w>max||h>max){if(w>h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;}}
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+      const jpeg=canvas.toDataURL('image/jpeg',0.92);
+      cb(jpeg,jpeg.split(',')[1]);
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── SCAN SCRIPT ──
+let scanB64=null,scanResult=null;
+function saveApiKey(){const k=document.getElementById('apiKeyInput').value.trim();if(k)localStorage.setItem(AK,k);}
+function openScanModal(){
+  scanB64=null;scanResult=null;
+  document.getElementById('scanPreview').style.display='none';
+  document.getElementById('scanStatus').className='scan-status';
+  document.getElementById('scanResultBox').classList.remove('visible');
+  document.getElementById('scanBtn').style.display='none';
+  document.getElementById('scanFillBtn').style.display='none';
+  document.getElementById('scanFileInput').value='';
+  const saved=localStorage.getItem(AK);if(saved)document.getElementById('apiKeyInput').value=saved;
+  document.getElementById('scanModal').classList.add('open');
+}
+function onFileSelected(e){const f=e.target.files[0];if(!f)return;processImage(f,(jpeg,b64)=>{scanB64=b64;const p=document.getElementById('scanPreview');p.src=jpeg;p.style.display='block';document.getElementById('scanBtn').style.display='block';document.getElementById('scanResultBox').classList.remove('visible');document.getElementById('scanFillBtn').style.display='none';document.getElementById('scanStatus').className='scan-status';});}
+
+async function runScan(){
+  const apiKey=document.getElementById('apiKeyInput').value.trim();
+  if(!apiKey){showScanSt('Please enter your API key.','error');return;}
+  if(!scanB64){showScanSt('Please select an image first.','error');return;}
+  showScanSt('Reading handwriting...','scanning');
+  document.getElementById('scanBtn').disabled=true;
+  const prompt=`You are reading a Golden Cusp Dental Lab script slip. Extract and return ONLY a valid JSON object, no markdown.
+Fields: doctor last name, patient first name, patient last name, date sent (YYYY-MM-DD), due date (YYYY-MM-DD), work type (pick from: Crown/Bridge/Denture/Partial Denture/Implant Crown/Veneer/Emax Crown/Zirconia/Inlay-Onlay/Flipper/Flexi Flipper/Night Guard/Retainer/Repair/Post Brux/Other), tooth number(s), description/notes.
+Return: {"doctor":"","patientFirstName":"","patientLastName":"","dateSent":"","dueDate":"","workType":"","toothNumber":"","description":""}`;
+  try{
+    let res;
+    try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:500,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:scanB64}},{type:'text',text:prompt}]}]})});}
+    catch(fe){showScanSt('Network error: '+fe.message,'error');document.getElementById('scanBtn').disabled=false;return;}
+    let data;try{data=await res.json();}catch(je){showScanSt('Parse error: '+je.message,'error');document.getElementById('scanBtn').disabled=false;return;}
+    if(!res.ok){showScanSt('API error: '+(data.error?.message||'Unknown'),'error');document.getElementById('scanBtn').disabled=false;return;}
+    const text=data.content?.[0]?.text?.trim();
+    if(!text){showScanSt('Empty response.','error');document.getElementById('scanBtn').disabled=false;return;}
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m){showScanSt('Could not parse: '+text.substring(0,120),'error');document.getElementById('scanBtn').disabled=false;return;}
+    scanResult=JSON.parse(m[0]);
+    const rows=[['Patient',[scanResult.patientFirstName,scanResult.patientLastName].filter(Boolean).join(' ')],['Doctor',scanResult.doctor],['Date Sent',scanResult.dateSent],['Due Date',scanResult.dueDate],['Work Type',scanResult.workType],['Tooth #',scanResult.toothNumber],['Description',scanResult.description]].filter(([,v])=>v);
+    document.getElementById('scanResultRows').innerHTML=rows.map(([k,v])=>`<div class="scan-result-row"><span class="scan-result-key">${k}</span><span class="scan-result-val">${v}</span></div>`).join('');
+    document.getElementById('scanResultBox').classList.add('visible');
+    document.getElementById('scanFillBtn').style.display='block';
+    document.getElementById('scanStatus').className='scan-status';
+    document.getElementById('scanBtn').disabled=false;
+  }catch(err){showScanSt('Error: '+err.message,'error');document.getElementById('scanBtn').disabled=false;}
+}
+function showScanSt(msg,type){const el=document.getElementById('scanStatus');el.textContent=msg;el.className='scan-status '+(type||'');}
+function fillFormFromScan(){
+  if(!scanResult)return;
+  closeModal('scanModal');openAddModal();
+  setTimeout(()=>{
+    if(scanResult.patientFirstName)document.getElementById('fFirstName').value=scanResult.patientFirstName;
+    if(scanResult.patientLastName) document.getElementById('fLastName').value=scanResult.patientLastName;
+    if(scanResult.dateSent){document.getElementById('fDateWritten').value=scanResult.dateSent;document.getElementById('fDateSent').value=scanResult.dateSent;}
+    if(scanResult.workType)document.getElementById('fWorkType').value=scanResult.workType;
+    const np=[];if(scanResult.toothNumber)np.push('Tooth: '+scanResult.toothNumber);if(scanResult.dueDate)np.push('Due: '+scanResult.dueDate);if(scanResult.description)np.push(scanResult.description);
+    if(np.length)document.getElementById('fNotes').value=np.join(' | ');
+    if(scanResult.doctor){const m=doctors.find(d=>d.toLowerCase().includes(scanResult.doctor.toLowerCase()));if(m)document.getElementById('fDoctor').value=m;}
+    toast('Form filled from scan!');
+  },300);
+}
+
+// ── SCAN INVOICE ──
+let invB64=null,invResult=null,matchedScript=null;
+function saveInvApiKey(){const k=document.getElementById('invApiKeyInput').value.trim();if(k)localStorage.setItem(AK,k);}
+function openInvoiceScanModal(){
+  invB64=null;invResult=null;matchedScript=null;
+  document.getElementById('invPreview').style.display='none';
+  document.getElementById('invStatus').className='scan-status';
+  document.getElementById('invResultBox').classList.remove('visible');
+  document.getElementById('invScanBtn').style.display='none';
+  document.getElementById('invMatchBtn').style.display='none';
+  document.getElementById('invFileInput').value='';
+  const saved=localStorage.getItem(AK);if(saved)document.getElementById('invApiKeyInput').value=saved;
+  document.getElementById('invoiceScanModal').classList.add('open');
+}
+function onInvFileSelected(e){const f=e.target.files[0];if(!f)return;processImage(f,(jpeg,b64)=>{invB64=b64;const p=document.getElementById('invPreview');p.src=jpeg;p.style.display='block';document.getElementById('invScanBtn').style.display='block';document.getElementById('invResultBox').classList.remove('visible');document.getElementById('invMatchBtn').style.display='none';document.getElementById('invStatus').className='scan-status';});}
+
+async function runInvoiceScan(){
+  const apiKey=document.getElementById('invApiKeyInput').value.trim();
+  if(!apiKey){showInvSt('Please enter your API key.','error');return;}
+  if(!invB64){showInvSt('Please select an image first.','error');return;}
+  showInvSt('Reading invoice...','scanning');
+  document.getElementById('invScanBtn').disabled=true;
+  const prompt=`You are reading a Golden Cusp Dental Lab invoice. Extract and return ONLY a valid JSON object, no markdown.
+Return: {"doctor":"","patientFirstName":"","patientLastName":"","invoiceNumber":"","invoiceDate":"YYYY-MM-DD","description":"","totalAmount":""}
+Leave fields empty if not visible.`;
+  try{
+    let res;
+    try{res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-opus-4-6',max_tokens:400,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:invB64}},{type:'text',text:prompt}]}]})});}
+    catch(fe){showInvSt('Network error: '+fe.message,'error');document.getElementById('invScanBtn').disabled=false;return;}
+    let data;try{data=await res.json();}catch(je){showInvSt('Parse error: '+je.message,'error');document.getElementById('invScanBtn').disabled=false;return;}
+    if(!res.ok){showInvSt('API error: '+(data.error?.message||'Unknown'),'error');document.getElementById('invScanBtn').disabled=false;return;}
+    const text=data.content?.[0]?.text?.trim();
+    if(!text){showInvSt('Empty response.','error');document.getElementById('invScanBtn').disabled=false;return;}
+    const m=text.match(/\{[\s\S]*\}/);
+    if(!m){showInvSt('Could not parse response.','error');document.getElementById('invScanBtn').disabled=false;return;}
+    invResult=JSON.parse(m[0]);
+    const rows=[['Patient',[invResult.patientFirstName,invResult.patientLastName].filter(Boolean).join(' ')],['Doctor',invResult.doctor],['Invoice #',invResult.invoiceNumber],['Date',invResult.invoiceDate],['Description',invResult.description],['Total',invResult.totalAmount?'$'+invResult.totalAmount:'']].filter(([,v])=>v);
+    document.getElementById('invResultRows').innerHTML=rows.map(([k,v])=>`<div class="scan-result-row"><span class="scan-result-key">${k}</span><span class="scan-result-val">${v}</span></div>`).join('');
+    document.getElementById('invResultBox').classList.add('visible');
+    document.getElementById('invMatchBtn').style.display='block';
+    document.getElementById('invStatus').className='scan-status';
+    document.getElementById('invScanBtn').disabled=false;
+  }catch(err){showInvSt('Error: '+err.message,'error');document.getElementById('invScanBtn').disabled=false;}
+}
+function showInvSt(msg,type){const el=document.getElementById('invStatus');el.textContent=msg;el.className='scan-status '+(type||'');}
+
+function findInvoiceMatch(){
+  if(!invResult)return;
+  const pLast=(invResult.patientLastName||invResult.patientFirstName||'').toLowerCase().trim();
+  const dLast=(invResult.doctor||'').toLowerCase().trim();
+  let best=null,bestScore=0;
+  scripts.forEach(s=>{
+    const sp=(s.patient||'').toLowerCase();const sd=(s.doctor||'').toLowerCase();
+    let score=0;
+    if(pLast&&sp.includes(pLast))score+=3;
+    if(dLast&&sd.includes(dLast))score+=2;
+    if(score>bestScore){bestScore=score;best=s;}
+  });
+  matchedScript=best;
+  const invRows=[['Patient',[invResult.patientFirstName,invResult.patientLastName].filter(Boolean).join(' ')],['Doctor',invResult.doctor],['Invoice #',invResult.invoiceNumber],['Amount',invResult.totalAmount?'$'+invResult.totalAmount:''],['Description',invResult.description]].filter(([,v])=>v);
+  document.getElementById('matchInvoiceRows').innerHTML=invRows.map(([k,v])=>`<div class="scan-result-row"><span class="scan-result-key">${k}</span><span class="scan-result-val">${v}</span></div>`).join('');
+  const cardEl=document.getElementById('matchScriptCard');
+  const noMatch=document.getElementById('noMatchMsg');
+  const confirmBtn=document.getElementById('confirmMatchBtn');
+  if(best&&bestScore>=3){
+    cardEl.style.display='block';noMatch.style.display='none';confirmBtn.style.display='block';
+    cardEl.innerHTML=`<div style="font-weight:800;font-size:0.92rem;margin-bottom:3px">${best.patient}</div><div style="font-size:0.74rem;color:var(--text-muted);font-weight:600">${best.doctor} · Sent ${fmtDate(best.dateSent)}</div>${best.workType?`<div style="font-size:0.71rem;margin-top:3px;color:var(--purple-mid);font-weight:700">${best.workType}</div>`:''}`;
+  }else{
+    cardEl.style.display='none';confirmBtn.style.display='none';noMatch.style.display='block';
+    noMatch.textContent='No matching script found for "'+[invResult.patientFirstName,invResult.patientLastName].filter(Boolean).join(' ')+'". Please update manually.';
+  }
+  closeModal('invoiceScanModal');
+  document.getElementById('invoiceMatchModal').classList.add('open');
+}
+
+function confirmInvoiceMatch(){
+  if(!matchedScript||!invResult)return;
+  const s=scripts.find(x=>x.id===matchedScript.id);if(!s)return;
+  if(invResult.invoiceNumber)s.invoiceNum=invResult.invoiceNumber;
+  if(invResult.totalAmount)  s.invoice=invResult.totalAmount;
+  if(invResult.invoiceDate&&!s.dateReceived)s.dateReceived=invResult.invoiceDate;
+  if(invResult.description&&!s.notes)s.notes=invResult.description;
+  s.labStatus='Received';s.caseStatus='Completed';
+  save();renderAll();closeModal('invoiceMatchModal');toast('Invoice applied to '+s.patient+'!');
+}
+
+// ── PRINT ──
+function printScript(id){
+  const s=scripts.find(x=>x.id===id);if(!s)return;
+  try{
+    const win=window.open('','_blank');
+    if(!win){toast('Allow popups to print.');return;}
+    win.document.write(`<!DOCTYPE html><html><head><title>Lab Script — ${s.patient}</title>
+    <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:28px;color:#111;font-size:12px}.hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;border-bottom:2px solid #3c3089;padding-bottom:12px}.practice{font-size:15px;font-weight:900;color:#3c3089}.practice-sub{font-size:10px;color:#888;margin-top:1px}.title{font-size:12px;font-weight:700;color:#3c3089;text-align:right}.dt{font-size:10px;color:#888;text-align:right;margin-top:2px}.sec{margin-bottom:16px}.sec-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:7px;border-bottom:1px solid #eee;padding-bottom:3px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:flex;flex-direction:column;gap:2px}.flbl{font-size:9px;font-weight:700;color:#888;text-transform:uppercase}.fval{font-size:12px;font-weight:700}.fval.empty{color:#ccc;font-style:italic;font-weight:400}.badges{display:flex;gap:8px;margin-top:4px}.bdg{display:inline-block;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700}.sent{background:#dbeafe;color:#3b82f6}.received{background:#d1fae5;color:#059669}.progress{background:#fef3c7;color:#d97706}.completed{background:#ede9fe;color:#7c3aed}.notes{background:#f9f8ff;border:1px solid #e2dff4;border-radius:8px;padding:9px 12px;font-size:11px;color:#444;line-height:1.5}.inv-box{background:#3c3089;color:white;border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}.inv-amt{font-size:20px;font-weight:900;color:#f4b942}.inv-num{font-size:10px;opacity:.75;margin-top:2px}.footer{margin-top:28px;border-top:1px solid #eee;padding-top:8px;font-size:9px;color:#aaa;display:flex;justify-content:space-between}@media print{body{padding:16px}}</style>
+    </head><body>
+    <div class="hdr"><div><div class="practice">Smile Services of New York</div><div class="practice-sub">Lab Script Record</div></div><div><div class="title">Lab Script</div><div class="dt">Printed: ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div></div></div>
+    <div class="sec"><div class="sec-title">Patient Information</div><div class="grid"><div class="field"><span class="flbl">Patient Name</span><span class="fval">${s.patient||'—'}</span></div><div class="field"><span class="flbl">Doctor</span><span class="fval">${s.doctor||'—'}</span></div><div class="field"><span class="flbl">Lab Company</span><span class="fval">${s.lab||'—'}</span></div><div class="field"><span class="flbl">Type of Work</span><span class="fval">${s.workType||'—'}</span></div></div></div>
+    <div class="sec"><div class="sec-title">Status</div><div class="badges"><span class="bdg ${s.labStatus==='Received'?'received':'sent'}">${s.labStatus||'Sent Out'}</span><span class="bdg ${s.caseStatus==='Completed'?'completed':'progress'}">${s.caseStatus||'In Progress'}</span></div></div>
+    <div class="sec"><div class="sec-title">Dates</div><div class="grid"><div class="field"><span class="flbl">Date Written</span><span class="fval">${s.dateWritten?new Date(s.dateWritten+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—'}</span></div><div class="field"><span class="flbl">Date Sent to Lab</span><span class="fval">${s.dateSent?new Date(s.dateSent+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—'}</span></div><div class="field"><span class="flbl">Date Received Back</span><span class="fval ${!s.dateReceived?'empty':''}">${s.dateReceived?new Date(s.dateReceived+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'Not yet received'}</span></div></div></div>
+    ${s.notes?`<div class="sec"><div class="sec-title">Notes / Description</div><div class="notes">${s.notes}</div></div>`:''}
+    <div class="sec"><div class="sec-title">Invoice</div>${s.invoice&&parseFloat(s.invoice)>0?`<div class="inv-box"><div><div style="font-size:10px;opacity:.75;margin-bottom:2px">Invoice Number</div><div style="font-weight:800;font-size:13px">${s.invoiceNum||'—'}</div></div><div style="text-align:right"><div style="font-size:10px;opacity:.75;margin-bottom:2px">Amount Billed</div><div class="inv-amt">$${parseFloat(s.invoice).toFixed(2)}</div></div></div>`:`<div style="color:#ccc;font-style:italic;font-size:11px;margin-top:4px">No invoice recorded yet.</div>`}</div>
+    <div class="footer"><span>Smile Services of New York — Confidential</span><span>${s.patient} · ${s.doctor}</span></div>
+    <script>window.onload=()=>window.print()<\/script></body></html>`);
+    win.document.close();
+  }catch(e){toast('Print not supported on this browser.');}
+}
+
+// ── SEED DATA ──
+load();
+(function seed(){
+  if(!doctors.includes('Dr. Arzanipour'))doctors.push('Dr. Arzanipour');
+  if(!doctors.includes('Dr. Rubinoff'))  doctors.push('Dr. Rubinoff');
+  if(!labs.includes('Golden Cusp Dental Lab'))labs.push('Golden Cusp Dental Lab');
+  const entries=[
+    // January - Dr. Arzanipour
+    {doctor:'Dr. Arzanipour',patient:'Ariadna Loayza', ds:'2026-01-04',dr:'2026-01-06',notes:'Setup Upper',                                            inv:'0',  inum:'49590', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Caesar Chumbay', ds:'2026-01-07',dr:'2026-01-07',notes:'Replace #9',                                             inv:'150',inum:'50353', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Millet Johnson', ds:'2026-01-08',dr:'2026-01-09',notes:'Custom Upper Tray (Dr. VR will redo case for Dr. A)',     inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Luis Roman',     ds:'2026-01-09',dr:'2026-01-09',notes:'',                                                        inv:'150',inum:'50351', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Clarice Dennis', ds:'2026-01-10',dr:'2026-01-10',notes:'',                                                        inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Ariadna Loayza', ds:'2026-01-11',dr:'2026-01-21',notes:'Shade change 2, 12, 13, 14, 15 / Process Upper',         inv:'200',inum:'50215', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Lenny Tobon',    ds:'2026-01-15',dr:'2026-01-15',notes:'#8 Flipper',                                              inv:'145',inum:'101640',lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Lenny Tobon',    ds:'2026-01-17',dr:'2026-01-28',notes:'#8 Flexi Flipper 1-2 Teeth',                             inv:'220',inum:'50704', lab:'Golden Cusp Dental Lab'},
+    // January - Dr. Rubinoff
+    {doctor:'Dr. Rubinoff',  patient:'David Barrios',  ds:'2026-01-11',dr:'2026-01-15',notes:'Add teeth & process',                                    inv:'150',inum:'49974', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Ariadna Loayza', ds:'2026-01-11',dr:'2026-01-21',notes:'Emax Crowns Anterior Layered #9',                        inv:'200',inum:'50280', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Desiree Rodgers',ds:'2026-01-18',dr:'2026-01-28',notes:'Acrylic Flipper 1-3 Teeth #6',                           inv:'145',inum:'50644', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Jordi Barrios',  ds:'2026-01-19',dr:'2026-01-28',notes:'Zirconia #19',                                           inv:'130',inum:'50708', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'David Barrios',  ds:'2026-01-27',dr:'2026-01-29',notes:'#29 Repair Clasp',                                       inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab'},
+    // February - Dr. Arzanipour
+    {doctor:'Dr. Arzanipour',patient:'Clarice Dennis', ds:'2026-02-01',dr:'',           notes:'',                                                       inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+    {doctor:'Dr. Arzanipour',patient:'Anwar Khan',     ds:'2026-02-05',dr:'2026-02-05',notes:'Add tooth #9, 10 / wrought wire',                        inv:'220',inum:'101594',lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Arzanipour',patient:'Beth Gilbert',   ds:'2026-02-28',dr:'2026-03-09',notes:'Nightguard Upper — March Bill',                          inv:'120',inum:'52649', lab:'Golden Cusp Dental Lab'},
+    // February - Dr. Rubinoff
+    {doctor:'Dr. Rubinoff',  patient:'Nora Nardone',   ds:'2026-02-01',dr:'2026-02-05',notes:'Zirconia #4',                                            inv:'130',inum:'51176', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Cislyn Martino', ds:'2026-02-03',dr:'',           notes:'',                                                       inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Peter Lopipero', ds:'2026-02-03',dr:'',           notes:'',                                                       inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Julie Butler',   ds:'2026-02-03',dr:'2026-02-11',notes:'Screw retain implant crown',                             inv:'350',inum:'51459', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', ds:'2026-02-17',dr:'2026-02-18',notes:'Custom Tray Upper/Lower',                                inv:'0',  inum:'51761', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Zheng Ke Wu',    ds:'2026-02-22',dr:'2026-02-24',notes:'Upper + Lower Bite tray, Bite Block Full Dentures',      inv:'0',  inum:'6039',  lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Barbara Calgagni',ds:'2026-02-22',dr:'2026-02-25',notes:'#7,6 Emax Crowns [TXT has no 7,6 it was 2,3]',          inv:'300',inum:'6041',  lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Peter Lopipero', ds:'2026-02-26',dr:'2026-03-05',notes:'Bridge Non-Precious (5-13), Lingual Metal (6-11), Flexi Flipper (3-4)',inv:'1535',inum:'52495',lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Sandra Kall',    ds:'2026-02-26',dr:'2026-03-05',notes:'Screw retain implant crown (5)',                          inv:'350',inum:'52476', lab:'Golden Cusp Dental Lab'},
+    // March - Dr. Arzanipour
+    {doctor:'Dr. Arzanipour',patient:'Surinder Kaur',  ds:'2026-03-28',dr:'',           notes:'April Bill',                                            inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+    {doctor:'Dr. Arzanipour',patient:'Felix Martinez', ds:'2026-03-31',dr:'',           notes:'April Bill',                                            inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+    // March - Dr. Rubinoff
+    {doctor:'Dr. Rubinoff',  patient:'Ariadna Loayza', ds:'2026-03-01',dr:'2026-03-09',notes:'Flexi Partial Denture Upper',                            inv:'325',inum:'52650', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Millet Johnson', ds:'2026-03-03',dr:'2026-03-10',notes:'Locator overdenture with cast fram parts no incl.',      inv:'950',inum:'52722', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', ds:'2026-03-03',dr:'',           notes:'',                                                       inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Zheng Ke Wu',    ds:'2026-03-15',dr:'2026-03-19',notes:'Full dentures upper/lower',                              inv:'900',inum:'53416', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Anita Johnson',  ds:'2026-03-17',dr:'2026-03-24',notes:'Cast metal partial denture upper/lower',                 inv:'900',inum:'53553', lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Anthony Lezaja', ds:'2026-03-17',dr:'',           notes:'',                                                       inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', ds:'2026-03-17',dr:'2026-03-20',notes:'Wax up teeth',                                           inv:'0',  inum:'0',     lab:'Golden Cusp Dental Lab'},
+    {doctor:'Dr. Rubinoff',  patient:'Rachelle Leaks', ds:'2026-03-31',dr:'',           notes:'',                                                       inv:'0',  inum:'',      lab:'Golden Cusp Dental Lab',ls:'Sent Out',cs:'In Progress'},
+  ];
+  entries.forEach(e=>{
+    if(scripts.some(s=>s.patient===e.patient&&s.doctor===e.doctor&&s.dateSent===e.ds&&(s.dateReceived||'')===(e.dr||'')))return;
+    scripts.push({id:uid(),patient:e.patient,doctor:e.doctor,lab:e.lab,dateWritten:e.ds,workType:'Other',labStatus:e.ls||'Received',caseStatus:e.cs||'Completed',dateSent:e.ds,dateReceived:e.dr||'',invoice:e.inv,invoiceNum:e.inum,notes:e.notes});
+  });
+  save();
+})();
+
+// Duplicate test entry
+(function dupTest(){
+  const id='dup-test-entry';
+  if(scripts.find(s=>s.id===id))return;
+  scripts.push({id,patient:'Lenny Tobon',doctor:'Dr. Arzanipour',lab:'Golden Cusp Dental Lab',dateWritten:'2026-01-20',workType:'Other',labStatus:'Received',caseStatus:'Completed',dateSent:'2026-01-20',dateReceived:'2026-01-22',invoice:'145',invoiceNum:'101640',notes:'TEST DUPLICATE ENTRY'});
+  save();
+})();
+
+renderAll();
+</script>
+</body>
+</html>
